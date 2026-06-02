@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>An Engineer&#39;s AI Engineering Journal: Joy, Thoughts and Practice</title>
-    <link>http://localhost:1313/</link>
-    <description>Recent content on An Engineer&#39;s AI Engineering Journal: Joy, Thoughts and Practice</description>
+    <title>A Senior Engineer&#39;s AI Engineering Journal: Joy, Thoughts and Practice</title>
+    <link>https://tiejun-ai.github.io/</link>
+    <description>Recent content on A Senior Engineer&#39;s AI Engineering Journal: Joy, Thoughts and Practice</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 31 May 2026 20:40:26 -0700</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://tiejun-ai.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Build AI Web Search Demo with Claude Code</title>
-      <link>http://localhost:1313/posts/ai_websearch_v1/</link>
+      <link>https://tiejun-ai.github.io/posts/ai_websearch_v1/</link>
       <pubDate>Sun, 31 May 2026 20:40:26 -0700</pubDate>
-      <guid>http://localhost:1313/posts/ai_websearch_v1/</guid>
+      <guid>https://tiejun-ai.github.io/posts/ai_websearch_v1/</guid>
       <description>&lt;em&gt;How I used Claude Code to build a minimal AI Web Search Demo&lt;/em&gt;: Design, Coding and Lessons</description>
     </item>
     <item>
       <title>Hello, world!</title>
-      <link>http://localhost:1313/posts/firstpost/</link>
+      <link>https://tiejun-ai.github.io/posts/firstpost/</link>
       <pubDate>Sun, 31 May 2026 14:21:05 -0700</pubDate>
-      <guid>http://localhost:1313/posts/firstpost/</guid>
+      <guid>https://tiejun-ai.github.io/posts/firstpost/</guid>
       <description></description>
     </item>
   </channel>
