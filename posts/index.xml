@@ -6,8 +6,15 @@
     <description>Recent content in Posts on AI Engineering Journal: Joy, Thoughts and Practice</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 31 May 2026 20:40:26 -0700</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jun 2026 00:00:00 -0700</lastBuildDate>
     <atom:link href="https://tiejun-ai.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Build AI Web Search Demo V2 (Agentic Search) with Claude Code</title>
+      <link>https://tiejun-ai.github.io/posts/ai_websearch_v2/</link>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 -0700</pubDate>
+      <guid>https://tiejun-ai.github.io/posts/ai_websearch_v2/</guid>
+      <description>&lt;em&gt;How I used Claude Code to build AI Web Search V2&lt;/em&gt;: Agentic Loop, Tool Use, and Multiple LLM Calls</description>
+    </item>
     <item>
       <title>Build AI Web Search Demo with Claude Code</title>
       <link>https://tiejun-ai.github.io/posts/ai_websearch_v1/</link>
