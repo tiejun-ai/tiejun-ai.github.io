@@ -6,8 +6,15 @@
     <description>Recent content on AI Engineering Journal: Joy, Thoughts and Practice</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 09 Jun 2026 00:00:00 -0700</lastBuildDate>
+    <lastBuildDate>Wed, 24 Jun 2026 00:00:00 -0700</lastBuildDate>
     <atom:link href="https://tiejun-ai.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Recommender Systems with Generative Retrieval (TIGER): My Explanation and Thoughts</title>
+      <link>https://tiejun-ai.github.io/posts/tiger_generative_retrieval/</link>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 -0700</pubDate>
+      <guid>https://tiejun-ai.github.io/posts/tiger_generative_retrieval/</guid>
+      <description>&lt;em&gt;Understanding TIGER (Classic Paper on Generative Recommendation) — generating Semantic IDs with RQ-VAE and retrieving items by autoregressively decoding user sequence of Semantic IDs&lt;/em&gt;</description>
+    </item>
     <item>
       <title>Build Multi-Agent Deep Research with Claude Code</title>
       <link>https://tiejun-ai.github.io/posts/deep_research/</link>
