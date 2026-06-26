@@ -6,8 +6,15 @@
     <description>Recent content on AI Engineering Journal: Joy, Thoughts and Practice</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 24 Jun 2026 00:00:00 -0700</lastBuildDate>
+    <lastBuildDate>Thu, 25 Jun 2026 00:00:00 -0700</lastBuildDate>
     <atom:link href="https://tiejun-ai.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How Does an LLM Know Tool Use?</title>
+      <link>https://tiejun-ai.github.io/posts/llm_tool_use/</link>
+      <pubDate>Thu, 25 Jun 2026 00:00:00 -0700</pubDate>
+      <guid>https://tiejun-ai.github.io/posts/llm_tool_use/</guid>
+      <description>&lt;em&gt;Tool use is not the model reaching out to the internet — it is a choreography of structured prompts, special training, and an external runtime. Here is what actually happens, and how models learn it.&lt;/em&gt;</description>
+    </item>
     <item>
       <title>Recommender Systems with Generative Retrieval (TIGER): My Explanation and Thoughts</title>
       <link>https://tiejun-ai.github.io/posts/tiger_generative_retrieval/</link>
