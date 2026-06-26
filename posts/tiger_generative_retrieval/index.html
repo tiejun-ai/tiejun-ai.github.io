@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto" data-theme="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>Recommender Systems with Generative Retrieval (TIGER): My Explanation and Thoughts | AI Engineering Journal: Joy, Thoughts and Practice</title>
 <meta name="keywords" content="">
 <meta name="description" content="Understanding TIGER (Classic Paper on Generative Recommendation) — generating Semantic IDs with RQ-VAE and retrieving items by autoregressively decoding user sequence of Semantic IDs">
 <meta name="author" content="">
-<link rel="canonical" href="https://tiejun-ai.github.io/posts/tiger_generative_retrieval/">
+<link rel="canonical" href="http://localhost:1313/posts/tiger_generative_retrieval/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://tiejun-ai.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://tiejun-ai.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://tiejun-ai.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://tiejun-ai.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://tiejun-ai.github.io/safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://tiejun-ai.github.io/posts/tiger_generative_retrieval/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/tiger_generative_retrieval/">
 <noscript>
     <style>
         #theme-toggle,
@@ -64,76 +64,13 @@
         document.querySelector("html").dataset.theme = 'light';
     }
 
-</script><meta property="og:url" content="https://tiejun-ai.github.io/posts/tiger_generative_retrieval/">
-  <meta property="og:site_name" content="AI Engineering Journal: Joy, Thoughts and Practice">
-  <meta property="og:title" content="Recommender Systems with Generative Retrieval (TIGER): My Explanation and Thoughts">
-  <meta property="og:description" content="Understanding TIGER (Classic Paper on Generative Recommendation) — generating Semantic IDs with RQ-VAE and retrieving items by autoregressively decoding user sequence of Semantic IDs">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2026-06-24T00:00:00-07:00">
-    <meta property="article:modified_time" content="2026-06-24T00:00:00-07:00">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Recommender Systems with Generative Retrieval (TIGER): My Explanation and Thoughts">
-  <meta name="twitter:description" content="Understanding TIGER (Classic Paper on Generative Recommendation) — generating Semantic IDs with RQ-VAE and retrieving items by autoregressively decoding user sequence of Semantic IDs">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "https://tiejun-ai.github.io/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "Recommender Systems with Generative Retrieval (TIGER): My Explanation and Thoughts",
-      "item": "https://tiejun-ai.github.io/posts/tiger_generative_retrieval/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Recommender Systems with Generative Retrieval (TIGER): My Explanation and Thoughts",
-  "name": "Recommender Systems with Generative Retrieval (TIGER): My Explanation and Thoughts",
-  "description": "Understanding TIGER (Classic Paper on Generative Recommendation) — generating Semantic IDs with RQ-VAE and retrieving items by autoregressively decoding user sequence of Semantic IDs",
-  "keywords": [
-    
-  ],
-  "articleBody": "Understanding TIGER (Classic Paper on Generative Recommendation) — generating Semantic IDs with RQ-VAE and retrieving items by autoregressively decoding user sequence of Semantic IDs\nPaper: Recommender Systems with Generative Retrieval (Rajput et al., NeurIPS 2023)\nTL;DR Traditional recommenders embed users and items into the same semantic space (with a Two-Tower Neural Network) and retrieve via an ANN (Approximate Nearest Neighbor) search. TIGER (Transformer Index for GEnerative Recommenders) instead gives each item a Semantic ID (a short tuple of codewords), models each user’s history as a sequence of these IDs, and trains a seq2seq Transformer to generate the next item’s Semantic ID. Retrieval becomes next-Semantic-ID prediction — similar to an LLM’s next-token prediction — so the door opens to applying LLM modeling and scaling-law strategies to Generative Recommendation systems.\nProblem Retrieval in Recommendation System. Industrial recommendation systems usually run in two stages:\nRetrieval (candidate generation): quickly narrow the full item catalog down to a few hundred/thousand candidates the user might like. Ranking: run a heavier, more accurate model to score and rank those candidates into the final list. ┌──────────────────────┐ Item Corpus ──► │ Retrieval (quick) │ ──► ~hundreds of ──► ┌──────────────────┐ (millions– │ candidate generation│ candidates │ Ranking (heavy) │ ──► final billions) └──────────────────────┘ └──────────────────┘ top-N TIGER is about the Retrieval stage. The task it targets is sequential recommendation: given a user’s ordered history of interacted items [item_1, …, item_n], return a ranked top-K of item candidates likely to be item_{n+1}.\nTraditional solution: Two-Tower embedding + ANN (Approximate Nearest Neighbor) Search\nA Two-Tower model has one tower (a neural network) for the user and one for the item. Each tower encodes its side’s features into an embedding in the same shared space, and the match score is just the dot product (cosine similarity) of the two embeddings. The model is trained so that interacted user–item pairs score high.\nmatch score = sim(user_emb, item_emb) ▲ ┌─────────────────┴─────────────────┐ │ dot product │ └─────────────────┬─────────────────┘ user_emb │ item_emb ▲ │ ▲ ┌───────────┐ ┌───────────┐ │ User Tower│ (shared embedding space) │ Item Tower│ │ (MLP) │ │ (MLP) │ └───────────┘ └───────────┘ ▲ ▲ user features: item features: history of item IDs, item ID, category, user ID/profile, context brand, text, price … At serving time the two towers are split: all item embeddings are precomputed and loaded into an ANN index offline, while the user embedding is computed on the fly and used to query that index for its nearest-neighbor items.\nuser history ─► [ User Tower ] ─► user emb ─► query ANN index ─► top-K nearest items (prebuilt over all item embs) Two pain points:\nMeaningless Random Atomic Item IDs: The ID vocabulary space could be huge (e.g. billions for Amazon); this creates difficulty in embedding model training, and hash-bucketing is typically needed to limit the ID space, which often leads to a trade-off between model accuracy and model size.\nCold Start Problem: A new item starts from a random embedding and can’t be retrieved until it accumulates user interactions.\nTIGER Method Explained TIGER takes a different approach to retrieval. It consists of two stages. Stage 1 turns each item into a Semantic ID — a hierarchical tuple of codewords where similar items share prefixes. Stage 2 trains a seq2seq Transformer to generate the next item’s Semantic ID from the user’s history.\nStage 1 — Content embedding → Semantic ID via RQ-VAE Concatenate an item’s text features (title, brand, category, price, description), run them through a frozen Sentence-T5 encoder to get a 768-dim embedding, then quantize it with an RQ-VAE (Residual-Quantized VAE). The RQ-VAE is an autoencoder whose bottleneck is a stack of vector quantizers — one per level — that together produce the Semantic ID:\nRQ-VAE architecture (Figure 3 from the paper).\nWalk through one item. The DNN encoder maps its embedding to a latent r0 = [0.90, 0.60] (real latents are 32-d; using 2-d here to keep the numbers readable). The residual quantizer then works level by level, each level picking the nearest codebook vector (c_d = argmin_i ‖r_d − C_d[i]‖) and passing the leftover residual (r_{d+1} = r_d − C_d[c_d]) to the next:\nLevel 0 (coarse): nearest in C0 is index 7, C0[7] = [0.80, 0.50] → c0 = 7 r1 = r0 − C0[7] = [0.10, 0.10] Level 1 (refine): nearest in C1 is index 1, C1[1] = [0.12, 0.08] → c1 = 1 r2 = r1 − C1[1] = [-0.02, 0.02] Level 2 (refine): nearest in C2 is index 4, C2[4] = [-0.02, 0.02] → c2 = 4 r3 = r2 − C2[4] ≈ [0, 0] The chosen indices are the Semantic ID = (7, 1, 4). Summing the chosen codeword vectors gives the quantized representation, which reconstructs the latent — C0[7] + C1[1] + C2[4] = [0.90, 0.60] = r0 — and the DNN decoder maps that back to the item embedding.\nThe figure uses tiny size-8 codebooks for illustration; in the paper each codebook holds 256 entries. A 4th codeword is also appended to disambiguate items that happen to collide on the first three, so every item ends up as a length-4 tuple — which is why Stage 2 treats each item as 4 tokens.\nTraining the RQ-VAE Model: three loss functions The encoder, decoder, and all codebooks are trained jointly. The catch: picking the nearest codeword (argmin) is not differentiable, so gradients can’t flow through it normally. RQ-VAE works around this with a straight-through estimator and a loss with three parts (summed over every level d):\nL = ‖x − x̂‖² + Σ_d ( ‖sg[r_d] − e_cd‖² + β·‖r_d − sg[e_cd]‖² ) └ recon ┘ └ codebook loss ┘ └ commitment loss ┘ sg[·] = stop-gradient (treated as a constant in backprop); e_cd = the codeword level d picked Reconstruction loss ‖x − x̂‖² — pulls the decoder output x̂ back toward the original embedding x. This loss function makes the model minimize the information loss due to the RQ-VAE quantization.\nCodebook loss ‖sg[r_d] − e_cd‖² — moves the chosen codeword toward the residual it should represent. Stop-gradient sg keeps the residual constant, so only the codebook vector moves — this is what actually learns the codebooks.\nCommitment loss β·‖r_d − sg[e_cd]‖² — moves the encoder’s residual toward the chosen codeword (stop-gradient on the codeword, so only the encoder moves). β = 0.25 is a trade-off factor between Codebook Loss and Commitment Loss.\nStage 2 — Generative retrieval with a seq2seq Transformer Now each item is 4 tokens from a vocabulary of 256 × 4 = 1024 semantic tokens. The user’s history is flattened into one token sequence and fed to a encoder–decoder Transformer, which generates the next item’s 4 codewords autoregressively:\nuser history (items 1..n, each = 4 codewords, flattened) ┌──────────────────────────────────────────────────────────┐ │ (c0,c1,c2,c3)_1 (c0,c1,c2,c3)_2 ... (c0,c1,c2,c3)_n │ input token sequence └───────────────────────────┬──────────────────────────────┘ ▼ ┌─────────────────────┐ │ Transformer Encoder │ └──────────┬──────────┘ │ encoded context ▼ ┌─────────────────────┐ predict one codeword at a time, ───► │ Transformer Decoder │ ─► feeding each back in: c0 ─► c1 ─► c2 ─► c3 └─────────────────────┘ └─ next item's Semantic ID ─┘ │ ▼ beam search ─► top-K Semantic IDs ─► lookup table ─► top-K items The decoder predicts c0, feeds it back to predict c1, and so on — exactly like an LLM generating tokens, but the “tokens” are codewords and a full item is just 4 of them. At serving, beam search yields the top-K most likely Semantic IDs, mapped back to items through the lookup table. Retrieval = Decoder Generation.\nExperiments and Results Evaluated on three categories of the Amazon Review dataset (Beauty, Sports, Toys) — the standard sequential-recommendation benchmark — with Recall@K and NDCG@K.\nThe high-level story: TIGER wins across all three datasets and both metrics, with the largest reported gains around +29% NDCG@5 vs SASRec and +17% Recall@5 vs S³-Rec on Beauty. Two findings matter more than the exact deltas:\nThe ID-generation method is what drives it. RQ-VAE Semantic IDs beat LSH (Locality Sensitive Hash) based Semantic IDs. Improved Cold-start and Recommendation Diversity. New items are still retrievable via shared ID prefixes with old items, and temperature-based decoding trades accuracy for more diverse recommendations. One interesting finding: decoding emits an invalid Semantic ID that maps to no item with surprisingly small probability (~0.1–1.6% at top-10); this can be solved by increasing beam size (retrieving more candidates) to generate full valid top-K items.\nMy Thoughts Benefits of TIGER approach and Semantic IDs Small ID Vocabulary Space\nIn the paper, a length-4 Semantic ID over 256-entry codebooks needs only 4 × 256 = 1024 codeword embeddings, yet can represent up to 256⁴ ≈ 4.3 billion unique items. A traditional atomic-ID model instead needs one embedding per item ID (for millions to billions of items) — so Semantic IDs replace that giant table (with actual size reduced by hash-bucketing) with ~1k shared embeddings, and effectively solves the “Large ID Space” problem.\nItem IDs are meaningful and Hierarchical\nThis can help diversity in retrieval, by using temperature-based sampling at different hierarchy levels.\nImproved Cold Start Recommendation\nNew items can be retrieved along with old items of similar Semantic IDs. Note this implies that Semantic IDs can only be generated by applying RQ-VAE over content-based (not interaction-based) embeddings.\nUnlocks LLM-style scaling\nMost importantly, this allows structuring the Retrieval problem as a seq2seq Next ID prediction problem, similar to LLM’s Next Token prediction, with potentially similar benefits from “Scaling-Law” modeling strategies.\nDisadvantages of TIGER approach Infrastructure Cost\nTraditional Two-Tower embedding based Retrieval only needs to do User Tower inference and ANN Search; it is highly efficient and easily scales up to a billions-item corpus. In comparison, TIGER can be more computationally expensive during inference due to the use of beam search for autoregressive decoding.\nComplexity\nThe TIGER approach adds the need for RQ-VAE model training and a Semantic ID generation process. If a recommendation system already uses many content-based embeddings and hierarchical (e.g. Category) features, the benefit of TIGER will diminish and may not justify its added complexity.\nRetrieval needs multi-channels\nIn practice, Retrieval is a multi-channel approach, generating candidates from multiple different channels. For example, an Amazon recommendation can retrieve item candidates from a user’s previous orders, browsing history, popular / trending items, discount items, new items, and many more. Using TIGER to replace all those channels is impractical. It is more practical to use TIGER as one of the many retrieval channels, especially for retrieving new items for improved Cold Start.\nBig picture Why this paper matters\nIt’s one of the first papers to make generative retrieval genuinely competitive for recommendation, and the first to use a learned, semantic item ID instead of a random atomic ID. That reframes retrieval as next-token generation and improves cold-start recommendation.\nIndustry trends\nSemantic IDs are the tokenization layer that lets generative models reason over items. The direction — items as tokens, retrieval as generation — opens the door to applying LLM modeling and scaling-law strategies to recommendation, which is clearly an exciting direction the industry is heading in. As inference costs become lower and lower day by day, scaling up recommendation models and systems will be the future!\nEnjoyed this article? ⭐ Star the repo on GitHub!\n",
-  "wordCount" : "1850",
-  "inLanguage": "en",
-  "datePublished": "2026-06-24T00:00:00-07:00",
-  "dateModified": "2026-06-24T00:00:00-07:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://tiejun-ai.github.io/posts/tiger_generative_retrieval/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "AI Engineering Journal: Joy, Thoughts and Practice",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://tiejun-ai.github.io/favicon.ico"
-    }
-  }
-}
 </script>
 </head>
 <body id="top">
     <header class="header">
     <nav class="header-nav">
         <div class="logo">
-            <a href="https://tiejun-ai.github.io/" accesskey="h" title="AI Engineering Journal: Joy, Thoughts and Practice (Alt + H)">AI Engineering Journal: Joy, Thoughts and Practice</a>
+            <a href="http://localhost:1313/" accesskey="h" title="AI Engineering Journal: Joy, Thoughts and Practice (Alt + H)">AI Engineering Journal: Joy, Thoughts and Practice</a>
             <div class="logo-switches">
                 <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
@@ -340,7 +277,7 @@ sg[·] = stop-gradient (treated as a constant in backprop);  e_cd = the codeword
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://tiejun-ai.github.io/">AI Engineering Journal: Joy, Thoughts and Practice</a></span> · 
+        <span>&copy; 2026 <a href="http://localhost:1313/">AI Engineering Journal: Joy, Thoughts and Practice</a></span> · 
 
     
     
