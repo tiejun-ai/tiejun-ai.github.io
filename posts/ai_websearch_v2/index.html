@@ -1,138 +1,6 @@
-<!DOCTYPE html>
-<html lang="en" dir="auto" data-theme="auto">
-
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
-<title>Build AI Web Search Demo V2 (Agentic Search) with Claude Code | AI Engineering Journal: Joy, Thoughts and Practice</title>
-<meta name="keywords" content="">
-<meta name="description" content="How I used Claude Code to build AI Web Search V2: Agentic Loop, Tool Use, and Multiple LLM Calls">
-<meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/ai_websearch_v2/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/ai_websearch_v2/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="AI Engineering Journal: Joy, Thoughts and Practice (Alt + H)">AI Engineering Journal: Joy, Thoughts and Practice</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    
-    <h1 class="post-title entry-hint-parent">
-      Build AI Web Search Demo V2 (Agentic Search) with Claude Code
-    </h1>
-    <div class="post-meta">
-
-<span title='2026-06-02 00:00:00 -0700 PDT'>June 2, 2026</span>
-
-</div>
-  </header> 
-  <div class="post-content md-content"><p><em>How I used Claude Code to build AI Web Search demo — with an Agentic Loop and Tool Use.</em></p>
-<p>GitHub Repository:</p>
-<p><strong><a href="https://github.com/tiejun-ai/ai_websearch/tree/main/v2">https://github.com/tiejun-ai/ai_websearch/tree/main/v2</a></strong></p>
-<hr>
-<h1 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h1>
-<p>In <a href="https://tiejun-ai.github.io/posts/ai_websearch_v1/">V1</a>, I built a minimal AI Web Search demo following a simple RAG pipeline:</p>
-<ol>
-<li>Fetch top-10 web results via Tavily</li>
-<li>Pass all results to the LLM in a single call</li>
-<li>LLM synthesizes an answer with inline citations</li>
-</ol>
-<p>It was simple and elegant! But V1 has a fundamental limitation: the LLM is only used to synthesize answers, based on Web Search results from original user query. There is no Query Understanding (what would be good Web Search queries), and information collection is limited to a single Web Search.</p>
-<p>In V2, our Search becomes an <strong>Agent</strong>, with LLM as an active <strong>Orchestrator</strong>. It decides:</p>
-<ul>
-<li><em>What</em> query to search for</li>
-<li><em>When</em> to search again</li>
-<li><em>When</em> it has enough information to answer</li>
-</ul>
-<p>For example, if the user query is &ldquo;1 + 2&rdquo;, the LLM would directly return the Answer &ldquo;3&rdquo; without triggering Web Search.</p>
-<p>Another example, for user query &ldquo;How was Claude Code implemented?&rdquo;, the LLM in my demo issued two web searches with different queries:</p>
-<pre tabindex="0"><code>[Loop 1] Calling LLM...
+<!doctype html><html lang=en dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Build AI Web Search Demo V2 (Agentic Search) with Claude Code | AI Engineering Journal: Joy, Thoughts and Practice</title><meta name=keywords content><meta name=description content="How I used Claude Code to build AI Web Search V2: Agentic Loop, Tool Use, and Multiple LLM Calls"><meta name=author content><link rel=canonical href=https://tiejun-ai.github.io/posts/ai_websearch_v2/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://tiejun-ai.github.io/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://tiejun-ai.github.io/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://tiejun-ai.github.io/favicon-32x32.png><link rel=apple-touch-icon href=https://tiejun-ai.github.io/apple-touch-icon.png><link rel=mask-icon href=https://tiejun-ai.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://tiejun-ai.github.io/posts/ai_websearch_v2/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><meta property="og:url" content="https://tiejun-ai.github.io/posts/ai_websearch_v2/"><meta property="og:site_name" content="AI Engineering Journal: Joy, Thoughts and Practice"><meta property="og:title" content="Build AI Web Search Demo V2 (Agentic Search) with Claude Code"><meta property="og:description" content="How I used Claude Code to build AI Web Search V2: Agentic Loop, Tool Use, and Multiple LLM Calls"><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2026-06-02T00:00:00-07:00"><meta property="article:modified_time" content="2026-06-02T00:00:00-07:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Build AI Web Search Demo V2 (Agentic Search) with Claude Code"><meta name=twitter:description content="How I used Claude Code to build AI Web Search V2: Agentic Loop, Tool Use, and Multiple LLM Calls"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://tiejun-ai.github.io/posts/"},{"@type":"ListItem","position":2,"name":"Build AI Web Search Demo V2 (Agentic Search) with Claude Code","item":"https://tiejun-ai.github.io/posts/ai_websearch_v2/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Build AI Web Search Demo V2 (Agentic Search) with Claude Code","name":"Build AI Web Search Demo V2 (Agentic Search) with Claude Code","description":"How I used Claude Code to build AI Web Search V2: Agentic Loop, Tool Use, and Multiple LLM Calls","keywords":[],"articleBody":"How I used Claude Code to build AI Web Search demo — with an Agentic Loop and Tool Use.\nGitHub Repository:\nhttps://github.com/tiejun-ai/ai_websearch/tree/main/v2\nIntroduction In V1, I built a minimal AI Web Search demo following a simple RAG pipeline:\nFetch top-10 web results via Tavily Pass all results to the LLM in a single call LLM synthesizes an answer with inline citations It was simple and elegant! But V1 has a fundamental limitation: the LLM is only used to synthesize answers, based on Web Search results from original user query. There is no Query Understanding (what would be good Web Search queries), and information collection is limited to a single Web Search.\nIn V2, our Search becomes an Agent, with LLM as an active Orchestrator. It decides:\nWhat query to search for When to search again When it has enough information to answer For example, if the user query is “1 + 2”, the LLM would directly return the Answer “3” without triggering Web Search.\nAnother example, for user query “How was Claude Code implemented?”, the LLM in my demo issued two web searches with different queries:\n[Loop 1] Calling LLM... [Loop 1] Tool call: web_search('Claude Code implementation details') [Loop 1] Got 10 results [Loop 2] Calling LLM... [Loop 2] Tool call: web_search('Claude Code architecture and features') [Loop 2] Got 10 results [Loop 3] Calling LLM... [Loop 3] LLM returned answer. Exiting loop. This is the shift from RAG to Agentic Search — and it’s a core pattern behind modern AI chatbots and search engines.\nI built V2 entirely through conversations with Claude Code.\nWhat Changed: V1 → V2 V1 V2 Architecture Simple RAG pipeline Agent Loop with Tool Use LLM calls per request 1 Up to MAX_LOOP_TIMES (default 3) Search queries 1 fixed query LLM-generated, multiple possible Search results Pre-fetched, static Accumulated and deduplicated across iterations LLM role Passive (reads results) Active (decides when/what to search) Step 1: Claude Code: Update CLAUDE.md I updated CLAUDE.md to describe the new V2 architecture — Agent Loop, Tool Use, and multiple LLM calls:\n# CLAUDE.md This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. ## Project `ai_websearch` is an AI-driven web search demo. Input: User Query (Question) Output Generation: 1. Web Search Result Section: list ALL Unique Web Search Results with: * Assigned result ranking number '[n]' based on discovery order * URL title as a clickable URL link * Summary snippet of the URL content 2. LLM Answer Section: a markdown Answer to User Query with inline citations (`[n](URL)`), around texts supported by the URL `[n]`. ## Architecture (Agent Loop, Tool Use, Multiple LLM Calls): 1. Tool Use: define a function for Web Search via Tavily (top K \u003c= 10 results) as tool for LLM 2. Run Agent Loop: * Init the Context with User Query * ask LLM with User Context to generate Output, providing the Web Search tool for LLM to use * check LLM response: * If the response is Tool Use (Web Search with LLM generated query), do the Web Search, collect the Search Results, add them to Context, and continue the Agent Loop * Otherwise, exit the Agent Loop and return the LLM response as Answer * add MAX_LOOP_TIMES (default=3) parameter, as maximal times the loop can run, which is also maximal number of LLM calls a request can incur. 3. Generate Output as markdown, convert it to html, and display html in Jupyter notebook. ## Tech Stack - Language: Python - Web search: Tavily Python SDK (`TavilyClient`) - LLM: LiteLLM Python SDK (model is a selectable parameter, default to a cheap OpenAI model) ## Code Structure * a single Jupyter notebook file ## Code Guidelines - Simple and concise; add key comments to explain non-obvious logic - Keep text cells in notebooks to explain reasoning between code cells Step 2: Ask Claude Code to Build With the updated CLAUDE.md in place, I entered Plan Mode:\n/plan Then asked:\nBased on CLAUDE.md, design the project. Claude Code (Sonnet 4.6 Model) read the CLAUDE.md and V1 code, generated a plan for me to review, in a few minutes. After I asked Claude to make some minor changes, I’m happy with the design and asked Claude to proceed with coding. The code generated was good and worked on 1st attempt!\nHigh-Level Architecture V2 replaces the static single-call pipeline with a dynamic agent loop:\nUser Query | v +------------------+ | Agent Loop | | | | LLM Call | | | | | +-- Tool Use? --\u003e web_search(query) | | | | | Search Results | | | | +\u003c--- add to context --+ | | | +-- Plain Answer? --\u003e Exit Loop | | +------------------+ v Format Output | v Answer + Citations + Results The key idea: the LLM is given a web_search tool. On each loop iteration:\nIf the LLM calls the tool, the results are collected into context and the loop continues If the LLM returns a plain answer, the loop exits This allows the LLM to issue multiple, targeted search queries — refining its understanding before committing to an answer. Results are deduplicated across searches so each URL appears only once in the final output.\nCode The entire application fits into a single Python file of ~124 lines (Github Link):\nimport os, json, sys import litellm from tavily import TavilyClient # --- API Keys ---------------------------------------------------------------- TAVILY_API_KEY = \"tvly-...\" # your Tavily API key OPENAI_API_KEY = \"sk-...\" # your OpenAI API key os.environ[\"OPENAI_API_KEY\"] = OPENAI_API_KEY # --- Configuration ----------------------------------------------------------- MODEL = \"gpt-4o-mini\" # change to e.g. \"gpt-4o\", \"claude-3-5-haiku-20241022\" TOP_K = 10 # max web results per search MAX_LOOP_TIMES = 3 # max LLM calls per request (including final answer) litellm.set_verbose = False # --- Step 1: Web Search Tool ------------------------------------------------- def search_web(query, k=TOP_K): \"\"\"Return top-k Tavily results for query.\"\"\" response = TavilyClient(api_key=TAVILY_API_KEY).search(query, max_results=k) return response[\"results\"] # each: {title, url, content, score} WEB_SEARCH_TOOL = { \"type\": \"function\", \"function\": { \"name\": \"web_search\", \"description\": \"Search the web for current information on a topic.\", \"parameters\": { \"type\": \"object\", \"properties\": { \"query\": {\"type\": \"string\", \"description\": \"The search query\"} }, \"required\": [\"query\"] } } } # --- Step 2: Agent Loop ------------------------------------------------------ SYSTEM_PROMPT = ( \"You are a helpful research assistant with access to a web_search tool. \" \"Use it to find information needed to answer the user's query; you may search multiple times with different queries. \" \"Each search result is labeled [n] with its URL. \" \"Cite supporting text in your answer as [n](URL) using those numbers. \" \"When you have enough information, write a clear, comprehensive markdown answer.\" ) def run_agent(query, model=MODEL, max_loops=MAX_LOOP_TIMES): \"\"\"Run the agent loop; return (answer_text, all_results, model_name).\"\"\" seen_urls = {} # url -\u003e result dict (augmented with \"num\" key) counter = 0 # global discovery counter across all searches messages = [ {\"role\": \"system\", \"content\": SYSTEM_PROMPT}, {\"role\": \"user\", \"content\": query}, ] last_content = \"\" model_name = model for loop_num in range(max_loops): print(f\"\\n[Loop {loop_num + 1}] Calling LLM...\", file=sys.stderr) response = litellm.completion( model=model, messages=messages, tools=[WEB_SEARCH_TOOL], tool_choice=\"auto\" ) msg = response.choices[0].message model_name = response.model # actual model name returned by the API last_content = msg.content or \"\" if not msg.tool_calls: # LLM produced a plain answer — exit loop print(f\"[Loop {loop_num + 1}] LLM returned answer. Exiting loop.\", file=sys.stderr) return last_content, list(seen_urls.values()), model_name # --- Execute tool calls and add results to context --- messages.append(msg) for tc in msg.tool_calls: search_query = json.loads(tc.function.arguments)[\"query\"] print(f\"[Loop {loop_num + 1}] Tool call: web_search('{search_query}')\", file=sys.stderr) results = search_web(search_query) print(f\"[Loop {loop_num + 1}] Got {len(results)} results\", file=sys.stderr) tool_text = \"\" for r in results: if r[\"url\"] not in seen_urls: # deduplicate; first occurrence wins counter += 1 r[\"num\"] = counter seen_urls[r[\"url\"]] = r num = seen_urls[r[\"url\"]][\"num\"] tool_text += f\"[{num}] {r['title']}\\nURL: {r['url']}\\n{r['content']}\\n\\n\" messages.append({ \"role\": \"tool\", \"tool_call_id\": tc.id, \"name\": \"web_search\", \"content\": tool_text }) # Max loops reached — return whatever the LLM last said print(f\"[Loop {max_loops}] Max loops reached. Returning last LLM response.\", file=sys.stderr) return last_content, list(seen_urls.values()), model_name # --- Step 3: Format Output --------------------------------------------------- def format_output(answer_text, all_results, model_name): \"\"\"Return final markdown string with Answer and Web Search Results sections.\"\"\" # Display results in ascending [n] (discovery) order ordered = sorted(all_results, key=lambda r: r[\"num\"]) results_md = \"## Web Search Results\\n\\n\" for r in ordered: results_md += f\"- [{r['num']}] [{r['title']}]({r['url']})\\n\" return f\"## Answer *(model: {model_name})*\\n\\n{answer_text}\\n\\n---\\n\\n{results_md}\" # --- Entry Point ------------------------------------------------------------- if __name__ == \"__main__\": query = \"How was Claude Code implemented?\" answer_text, all_results, model_name = run_agent(query) print(format_output(answer_text, all_results, model_name)) Demo The demo can be run easily with a Jupyter notebook version: Example runs:\nEnglish query demo Chinese query demo Here is an example result, which shows Web Search Tool Use, Synthesized Answer, Citations and ALL Web Search results collected:\nquery = \"How was Claude Code implemented?\" # \u003c- change this answer_text, all_results, model_name = run_agent(query) output_md = format_output(answer_text, all_results, model_name) display_answer(output_md) Output:\n[Loop 1] Calling LLM... [Loop 1] Tool call: web_search('Claude Code implementation details') [Loop 1] Got 10 results [Loop 2] Calling LLM... [Loop 2] Tool call: web_search('Claude Code architecture and features') [Loop 2] Got 10 results [Loop 3] Calling LLM... [Loop 3] LLM returned answer. Exiting loop. Answer (model: gpt-4o-mini-2024-07-18) Claude Code Implementation Overview Claude Code is an advanced AI-assisted coding tool developed by Anthropic, primarily designed to optimize software development workflows by facilitating tasks like reading code, making edits, running tests, and integrating with development environments. Here’s a comprehensive look at how Claude Code is implemented and its architectural framework. Key Features and Architecture Modular Architecture: Claude Code is structured around a well-defined architecture consisting of seven components: User Interface Agent Loop Permission System Tool Management State and Persistence Execution Environment This architecture is structured across five layers, ensuring efficient interaction and task management within the coding environment [2]. Agentic Functionality: At its core, Claude Code employs an agentic approach, enabling it to autonomously perform coding tasks. For instance, it can analyze existing codebases, suggest improvements, and execute specified tasks upon user commands. This includes automatic testing and contextual understanding of the overarching code structure [1] [3]. CLAUDE.md - Persistent Memory: Claude Code utilizes a specific markdown file named CLAUDE.md, which serves as a project memory. This file stores vital instructions and project context that Claude uses to enhance its responses and suggestions across sessions, ensuring continuity in its interactions with developers [12]. Tool Integration and Command Execution: The system seamlessly integrates tools for various functions such as file editing, command execution, and communication with external services. For example, it can run entire test suites after making code changes and automatically commit modifications to a version control system upon user approval [3]. AI Decision Logic and Infrastructure: Interestingly, only a small fraction of Claude Code's codebase (around 1.6%) is dedicated to AI decision-making. This highlights the importance of infrastructure that supports AI functionality, including routing logic, context management, and error handling, making the entire system robust and dependable [2] [11]. Adaptive Agent Teams: One of Claude Code’s standout features is the ability to create and manage adaptive \"agent teams.\" This allows multiple Claude agents to work concurrently on related tasks, enhancing efficiency and creativity in problem-solving [1] [5]. Development History and Usage Claude Code was quickly adopted within Anthropic, with about 20% of the engineering team utilizing the tool shortly after its initial release. This rapid acceptance showcases the tool's effectiveness and utility in real-world coding environments [5]. Conclusions Claude Code represents a significant evolution in software development tools, integrating AI capabilities with user-centered features to simplify coding tasks. By leveraging a blend of sophisticated architecture, persistent memory, and agentic functionalities, it stands as a critical resource for developers looking to enhance productivity and streamline their workflows. Web Search Results [1] Overview - Claude Code Docs [2] VILA-Lab/Dive-into-Claude-Code - GitHub [3] How Claude Code works - Claude Code Docs [4] Using spec-driven development with Claude Code | by Heeki Park [5] How Claude Code is built - The Pragmatic Engineer [6] The Claude Code Handbook: A Professional Introduction ... [7] How I use Claude Code (+ my best tips) - Builder.io [8] Claude Code Tutorial - Build Apps 10x Faster with AI - YouTube [9] Claude Code Best Practices: Lessons From Real Projects [10] How Phase-Based Development Made Claude Code 10x More ... [11] Claude Code Architecture Analysis [12] claude-code/plugins/feature-dev/agents/code-architect.md at main [13] Claude Code Has a Hidden Architecture. Most Engineers Never Find It. [14] Dependencies: The Foundation of Claude Code's Architecture - Notion [15] 7 core features of Claude Code Explained | by Benjamin A. [16] Introducing Claude Design by Anthropic Labs [17] Claude Code is brilliant at churning out code but terrible at architecture [18] How I use Claude Code to keep my architecture decisions on track Debugging and Iterations Testing did show bugs in Citation and Web Search results presentation. For each of the bugs found, I just told Claude Code about the bug, and Claude was able to fix it easily.\nLessons Learned Agentic Architecture enables Intelligence In V2, LLM can reformulate its search query, fetch more targeted results, evaluate Web Search results, and build a richer context before answering. This process is similar to what a human does when searching the web. With an Agentic Architecture, LLM can drive the workflow and enable its intelligence where it is needed.\nTool Use Is a Clean Abstraction Defining web_search as a JSON schema tool and letting the LLM decide when to call it is cleaner than pre-fetching results. The LLM’s tool-calling behavior is predictable and easy to inspect from the loop logs — you can see exactly which queries it chose and why.\nMAX_LOOP_TIMES Is a Critical Guard Without a loop cap, an agent can spiral: it searches, finds partial results, searches again, and never commits to an answer. MAX_LOOP_TIMES=3 gives the LLM enough room to be thorough while bounding latency and API costs. In practice, most queries resolve in 1–2 loops.\nCLAUDE.md Architecture Descriptions Work Well Describing the Agent Loop in CLAUDE.md as a step-by-step spec — tool definition, loop logic, exit conditions — gave Claude Code exactly what it needed to generate correct code. The more precise the architecture description, the less iteration is needed.\nFinal Thoughts V2 demonstrates a fundamental architectural shift: from LLM-as-reader to LLM-as-agent. The code is only modestly more complex than V1 (~124 lines vs. ~81 lines), but the behavior is qualitatively different. The LLM actively drives the Web Search process, similar to the Web Search process of a human.\nThis pattern — Agentic Loop + Tool Use — is the foundation of how modern AI assistants like Gemini, Perplexity, ChatGPT, and Claude work under the hood. Building it from scratch in ~100 lines is enjoyable and educational.\nClaude Code made the development easy: describe the architecture in CLAUDE.md, ask it to design, build, debug and iterate. AI Coding is clearly effective and enjoyable!\nEnjoyed this article? ⭐ Star the repo on GitHub!\n","wordCount":"2464","inLanguage":"en","datePublished":"2026-06-02T00:00:00-07:00","dateModified":"2026-06-02T00:00:00-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://tiejun-ai.github.io/posts/ai_websearch_v2/"},"publisher":{"@type":"Organization","name":"AI Engineering Journal: Joy, Thoughts and Practice","logo":{"@type":"ImageObject","url":"https://tiejun-ai.github.io/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://tiejun-ai.github.io/ accesskey=h title="AI Engineering Journal: Joy, Thoughts and Practice (Alt + H)">AI Engineering Journal: Joy, Thoughts and Practice</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">Build AI Web Search Demo V2 (Agentic Search) with Claude Code</h1><div class=post-meta><span title='2026-06-02 00:00:00 -0700 PDT'>June 2, 2026</span></div></header><div class="post-content md-content"><p><em>How I used Claude Code to build AI Web Search demo — with an Agentic Loop and Tool Use.</em></p><p>GitHub Repository:</p><p><strong><a href=https://github.com/tiejun-ai/ai_websearch/tree/main/v2>https://github.com/tiejun-ai/ai_websearch/tree/main/v2</a></strong></p><hr><h1 id=introduction>Introduction<a hidden class=anchor aria-hidden=true href=#introduction>#</a></h1><p>In <a href=https://tiejun-ai.github.io/posts/ai_websearch_v1/>V1</a>, I built a minimal AI Web Search demo following a simple RAG pipeline:</p><ol><li>Fetch top-10 web results via Tavily</li><li>Pass all results to the LLM in a single call</li><li>LLM synthesizes an answer with inline citations</li></ol><p>It was simple and elegant! But V1 has a fundamental limitation: the LLM is only used to synthesize answers, based on Web Search results from original user query. There is no Query Understanding (what would be good Web Search queries), and information collection is limited to a single Web Search.</p><p>In V2, our Search becomes an <strong>Agent</strong>, with LLM as an active <strong>Orchestrator</strong>. It decides:</p><ul><li><em>What</em> query to search for</li><li><em>When</em> to search again</li><li><em>When</em> it has enough information to answer</li></ul><p>For example, if the user query is &ldquo;1 + 2&rdquo;, the LLM would directly return the Answer &ldquo;3&rdquo; without triggering Web Search.</p><p>Another example, for user query &ldquo;How was Claude Code implemented?&rdquo;, the LLM in my demo issued two web searches with different queries:</p><pre tabindex=0><code>[Loop 1] Calling LLM...
 [Loop 1] Tool call: web_search(&#39;Claude Code implementation details&#39;)
 [Loop 1] Got 10 results
 
@@ -142,273 +10,203 @@
 
 [Loop 3] Calling LLM...
 [Loop 3] LLM returned answer. Exiting loop.
-</code></pre><p>This is the shift from RAG to <strong>Agentic Search</strong> — and it&rsquo;s a core pattern behind modern AI chatbots and search engines.</p>
-<p>I built V2 entirely through conversations with <strong>Claude Code</strong>.</p>
-<hr>
-<h1 id="what-changed-v1--v2">What Changed: V1 → V2<a hidden class="anchor" aria-hidden="true" href="#what-changed-v1--v2">#</a></h1>
-<table>
-	<thead>
-			<tr>
-					<th></th>
-					<th>V1</th>
-					<th>V2</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>Architecture</td>
-					<td>Simple RAG pipeline</td>
-					<td>Agent Loop with Tool Use</td>
-			</tr>
-			<tr>
-					<td>LLM calls per request</td>
-					<td>1</td>
-					<td>Up to <code>MAX_LOOP_TIMES</code> (default 3)</td>
-			</tr>
-			<tr>
-					<td>Search queries</td>
-					<td>1 fixed query</td>
-					<td>LLM-generated, multiple possible</td>
-			</tr>
-			<tr>
-					<td>Search results</td>
-					<td>Pre-fetched, static</td>
-					<td>Accumulated and deduplicated across iterations</td>
-			</tr>
-			<tr>
-					<td>LLM role</td>
-					<td>Passive (reads results)</td>
-					<td>Active (decides when/what to search)</td>
-			</tr>
-	</tbody>
-</table>
-<hr>
-<h1 id="step-1-claude-code-update-claudemd">Step 1: Claude Code: Update CLAUDE.md<a hidden class="anchor" aria-hidden="true" href="#step-1-claude-code-update-claudemd">#</a></h1>
-<p>I updated <code>CLAUDE.md</code> to describe the new V2 architecture — Agent Loop, Tool Use, and multiple LLM calls:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span># CLAUDE.md
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">## Project
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#e6db74">`ai_websearch`</span> is an AI-driven web search demo.
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Input: User Query (Question)
-</span></span><span style="display:flex;"><span>Output Generation: 
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">1.</span> Web Search Result Section: list ALL Unique Web Search Results with:
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">*</span> Assigned result ranking number &#39;[n]&#39; based on discovery order
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">*</span> URL title as a clickable URL link
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">*</span> Summary snippet of the URL content
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">2.</span> LLM Answer Section: a markdown Answer to User Query with inline citations (<span style="color:#e6db74">`[n](URL)`</span>), around texts supported by the URL <span style="color:#e6db74">`[n]`</span>.
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">## Architecture (Agent Loop, Tool Use, Multiple LLM Calls):
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">1.</span> Tool Use: define a function for Web Search via Tavily (top K &lt;= 10 results) as tool for LLM
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">2.</span> Run Agent Loop:
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">*</span> Init the Context with User Query
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">*</span> ask LLM with User Context to generate Output, providing the Web Search tool for LLM to use
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">*</span> check LLM response:
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">*</span> If the response is Tool Use (Web Search with LLM generated query), do the Web Search,
-</span></span><span style="display:flex;"><span>      collect the Search Results, add them to Context, and continue the Agent Loop
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">*</span> Otherwise, exit the Agent Loop and return the LLM response as Answer
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">*</span> add MAX_LOOP_TIMES (default=3) parameter, as maximal times the loop can run,
-</span></span><span style="display:flex;"><span>    which is also maximal number of LLM calls a request can incur.
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">3.</span> Generate Output as markdown, convert it to html, and display html in Jupyter notebook.
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">## Tech Stack
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">-</span> Language: Python
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">-</span> Web search: Tavily Python SDK (<span style="color:#e6db74">`TavilyClient`</span>)
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">-</span> LLM: LiteLLM Python SDK (model is a selectable parameter, default to a cheap OpenAI model)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">## Code Structure
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">*</span> a single Jupyter notebook file
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">## Code Guidelines
-</span></span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">-</span> Simple and concise; add key comments to explain non-obvious logic
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">-</span> Keep text cells in notebooks to explain reasoning between code cells
-</span></span></code></pre></div><hr>
-<h1 id="step-2-ask-claude-code-to-build">Step 2: Ask Claude Code to Build<a hidden class="anchor" aria-hidden="true" href="#step-2-ask-claude-code-to-build">#</a></h1>
-<p>With the updated <code>CLAUDE.md</code> in place, I entered Plan Mode:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/plan
-</span></span></code></pre></div><p>Then asked:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Based on CLAUDE.md, design the project.
-</span></span></code></pre></div><p>Claude Code (Sonnet 4.6 Model) read the CLAUDE.md and V1 code, generated a plan for me to review, in a few minutes. After I asked Claude to make some minor changes, I&rsquo;m happy with the design and asked Claude to proceed with coding. The code generated was good and worked on 1st attempt!</p>
-<hr>
-<h1 id="high-level-architecture">High-Level Architecture<a hidden class="anchor" aria-hidden="true" href="#high-level-architecture">#</a></h1>
-<p>V2 replaces the static single-call pipeline with a dynamic agent loop:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>User Query
-</span></span><span style="display:flex;"><span>     |
-</span></span><span style="display:flex;"><span>     v
-</span></span><span style="display:flex;"><span>+------------------+
-</span></span><span style="display:flex;"><span>|  Agent Loop      |
-</span></span><span style="display:flex;"><span>|                  |
-</span></span><span style="display:flex;"><span>|  LLM Call        |
-</span></span><span style="display:flex;"><span>|    |             |
-</span></span><span style="display:flex;"><span>|    +-- Tool Use? --&gt; web_search(query)
-</span></span><span style="display:flex;"><span>|    |                     |
-</span></span><span style="display:flex;"><span>|    |               Search Results
-</span></span><span style="display:flex;"><span>|    |                     |
-</span></span><span style="display:flex;"><span>|    +&lt;--- add to context --+
-</span></span><span style="display:flex;"><span>|    |
-</span></span><span style="display:flex;"><span>|    +-- Plain Answer? --&gt; Exit Loop
-</span></span><span style="display:flex;"><span>|                               |
-</span></span><span style="display:flex;"><span>+------------------+            v
-</span></span><span style="display:flex;"><span>                         Format Output
-</span></span><span style="display:flex;"><span>                               |
-</span></span><span style="display:flex;"><span>                               v
-</span></span><span style="display:flex;"><span>                    Answer + Citations + Results
-</span></span></code></pre></div><p>The key idea: the LLM is given a <code>web_search</code> tool. On each loop iteration:</p>
-<ul>
-<li>If the LLM calls the tool, the results are collected into context and the loop continues</li>
-<li>If the LLM returns a plain answer, the loop exits</li>
-</ul>
-<p>This allows the LLM to issue multiple, targeted search queries — refining its understanding before committing to an answer. Results are <strong>deduplicated</strong> across searches so each URL appears only once in the final output.</p>
-<hr>
-<h1 id="code">Code<a hidden class="anchor" aria-hidden="true" href="#code">#</a></h1>
-<p>The entire application fits into a single Python file of ~124 lines (<a href="https://github.com/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.py">Github Link</a>):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os<span style="color:#f92672">,</span> json<span style="color:#f92672">,</span> sys
-</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> litellm
-</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> tavily <span style="color:#f92672">import</span> TavilyClient
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- API Keys ----------------------------------------------------------------</span>
-</span></span><span style="display:flex;"><span>TAVILY_API_KEY <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;tvly-...&#34;</span>  <span style="color:#75715e"># your Tavily API key</span>
-</span></span><span style="display:flex;"><span>OPENAI_API_KEY <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;sk-...&#34;</span>    <span style="color:#75715e"># your OpenAI API key</span>
-</span></span><span style="display:flex;"><span>os<span style="color:#f92672">.</span>environ[<span style="color:#e6db74">&#34;OPENAI_API_KEY&#34;</span>] <span style="color:#f92672">=</span> OPENAI_API_KEY
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- Configuration -----------------------------------------------------------</span>
-</span></span><span style="display:flex;"><span>MODEL          <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;gpt-4o-mini&#34;</span>  <span style="color:#75715e"># change to e.g. &#34;gpt-4o&#34;, &#34;claude-3-5-haiku-20241022&#34;</span>
-</span></span><span style="display:flex;"><span>TOP_K          <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>             <span style="color:#75715e"># max web results per search</span>
-</span></span><span style="display:flex;"><span>MAX_LOOP_TIMES <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>              <span style="color:#75715e"># max LLM calls per request (including final answer)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>litellm<span style="color:#f92672">.</span>set_verbose <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- Step 1: Web Search Tool -------------------------------------------------</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">search_web</span>(query, k<span style="color:#f92672">=</span>TOP_K):
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;Return top-k Tavily results for query.&#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    response <span style="color:#f92672">=</span> TavilyClient(api_key<span style="color:#f92672">=</span>TAVILY_API_KEY)<span style="color:#f92672">.</span>search(query, max_results<span style="color:#f92672">=</span>k)
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response[<span style="color:#e6db74">&#34;results&#34;</span>]  <span style="color:#75715e"># each: {title, url, content, score}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>WEB_SEARCH_TOOL <span style="color:#f92672">=</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;function&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;function&#34;</span>: {
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;web_search&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;description&#34;</span>: <span style="color:#e6db74">&#34;Search the web for current information on a topic.&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;parameters&#34;</span>: {
-</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;object&#34;</span>,
-</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;properties&#34;</span>: {
-</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;query&#34;</span>: {<span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;string&#34;</span>, <span style="color:#e6db74">&#34;description&#34;</span>: <span style="color:#e6db74">&#34;The search query&#34;</span>}
-</span></span><span style="display:flex;"><span>            },
-</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;required&#34;</span>: [<span style="color:#e6db74">&#34;query&#34;</span>]
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- Step 2: Agent Loop ------------------------------------------------------</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>SYSTEM_PROMPT <span style="color:#f92672">=</span> (
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;You are a helpful research assistant with access to a web_search tool. &#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Use it to find information needed to answer the user&#39;s query; you may search multiple times with different queries. &#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Each search result is labeled [n] with its URL. &#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Cite supporting text in your answer as [n](URL) using those numbers. &#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;When you have enough information, write a clear, comprehensive markdown answer.&#34;</span>
-</span></span><span style="display:flex;"><span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run_agent</span>(query, model<span style="color:#f92672">=</span>MODEL, max_loops<span style="color:#f92672">=</span>MAX_LOOP_TIMES):
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;Run the agent loop; return (answer_text, all_results, model_name).&#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    seen_urls <span style="color:#f92672">=</span> {}   <span style="color:#75715e"># url -&gt; result dict (augmented with &#34;num&#34; key)</span>
-</span></span><span style="display:flex;"><span>    counter   <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>    <span style="color:#75715e"># global discovery counter across all searches</span>
-</span></span><span style="display:flex;"><span>    messages  <span style="color:#f92672">=</span> [
-</span></span><span style="display:flex;"><span>        {<span style="color:#e6db74">&#34;role&#34;</span>: <span style="color:#e6db74">&#34;system&#34;</span>, <span style="color:#e6db74">&#34;content&#34;</span>: SYSTEM_PROMPT},
-</span></span><span style="display:flex;"><span>        {<span style="color:#e6db74">&#34;role&#34;</span>: <span style="color:#e6db74">&#34;user&#34;</span>,   <span style="color:#e6db74">&#34;content&#34;</span>: query},
-</span></span><span style="display:flex;"><span>    ]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    last_content <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    model_name   <span style="color:#f92672">=</span> model
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> loop_num <span style="color:#f92672">in</span> range(max_loops):
-</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">[Loop </span><span style="color:#e6db74">{</span>loop_num <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span><span style="color:#e6db74">}</span><span style="color:#e6db74">] Calling LLM...&#34;</span>, file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
-</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> litellm<span style="color:#f92672">.</span>completion(
-</span></span><span style="display:flex;"><span>            model<span style="color:#f92672">=</span>model, messages<span style="color:#f92672">=</span>messages,
-</span></span><span style="display:flex;"><span>            tools<span style="color:#f92672">=</span>[WEB_SEARCH_TOOL], tool_choice<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;auto&#34;</span>
-</span></span><span style="display:flex;"><span>        )
-</span></span><span style="display:flex;"><span>        msg        <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span>choices[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>message
-</span></span><span style="display:flex;"><span>        model_name <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span>model  <span style="color:#75715e"># actual model name returned by the API</span>
-</span></span><span style="display:flex;"><span>        last_content <span style="color:#f92672">=</span> msg<span style="color:#f92672">.</span>content <span style="color:#f92672">or</span> <span style="color:#e6db74">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> msg<span style="color:#f92672">.</span>tool_calls:  <span style="color:#75715e"># LLM produced a plain answer — exit loop</span>
-</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[Loop </span><span style="color:#e6db74">{</span>loop_num <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span><span style="color:#e6db74">}</span><span style="color:#e6db74">] LLM returned answer. Exiting loop.&#34;</span>, file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> last_content, list(seen_urls<span style="color:#f92672">.</span>values()), model_name
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># --- Execute tool calls and add results to context ---</span>
-</span></span><span style="display:flex;"><span>        messages<span style="color:#f92672">.</span>append(msg)
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> tc <span style="color:#f92672">in</span> msg<span style="color:#f92672">.</span>tool_calls:
-</span></span><span style="display:flex;"><span>            search_query <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>loads(tc<span style="color:#f92672">.</span>function<span style="color:#f92672">.</span>arguments)[<span style="color:#e6db74">&#34;query&#34;</span>]
-</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[Loop </span><span style="color:#e6db74">{</span>loop_num <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span><span style="color:#e6db74">}</span><span style="color:#e6db74">] Tool call: web_search(&#39;</span><span style="color:#e6db74">{</span>search_query<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;)&#34;</span>, file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
-</span></span><span style="display:flex;"><span>            results <span style="color:#f92672">=</span> search_web(search_query)
-</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[Loop </span><span style="color:#e6db74">{</span>loop_num <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span><span style="color:#e6db74">}</span><span style="color:#e6db74">] Got </span><span style="color:#e6db74">{</span>len(results)<span style="color:#e6db74">}</span><span style="color:#e6db74"> results&#34;</span>, file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            tool_text <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> results:
-</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> r[<span style="color:#e6db74">&#34;url&#34;</span>] <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> seen_urls:  <span style="color:#75715e"># deduplicate; first occurrence wins</span>
-</span></span><span style="display:flex;"><span>                    counter <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span>                    r[<span style="color:#e6db74">&#34;num&#34;</span>] <span style="color:#f92672">=</span> counter
-</span></span><span style="display:flex;"><span>                    seen_urls[r[<span style="color:#e6db74">&#34;url&#34;</span>]] <span style="color:#f92672">=</span> r
-</span></span><span style="display:flex;"><span>                num <span style="color:#f92672">=</span> seen_urls[r[<span style="color:#e6db74">&#34;url&#34;</span>]][<span style="color:#e6db74">&#34;num&#34;</span>]
-</span></span><span style="display:flex;"><span>                tool_text <span style="color:#f92672">+=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[</span><span style="color:#e6db74">{</span>num<span style="color:#e6db74">}</span><span style="color:#e6db74">] </span><span style="color:#e6db74">{</span>r[<span style="color:#e6db74">&#39;title&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">URL: </span><span style="color:#e6db74">{</span>r[<span style="color:#e6db74">&#39;url&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">{</span>r[<span style="color:#e6db74">&#39;content&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>            messages<span style="color:#f92672">.</span>append({
-</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;role&#34;</span>: <span style="color:#e6db74">&#34;tool&#34;</span>, <span style="color:#e6db74">&#34;tool_call_id&#34;</span>: tc<span style="color:#f92672">.</span>id,
-</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;web_search&#34;</span>, <span style="color:#e6db74">&#34;content&#34;</span>: tool_text
-</span></span><span style="display:flex;"><span>            })
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Max loops reached — return whatever the LLM last said</span>
-</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[Loop </span><span style="color:#e6db74">{</span>max_loops<span style="color:#e6db74">}</span><span style="color:#e6db74">] Max loops reached. Returning last LLM response.&#34;</span>, file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> last_content, list(seen_urls<span style="color:#f92672">.</span>values()), model_name
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- Step 3: Format Output ---------------------------------------------------</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">format_output</span>(answer_text, all_results, model_name):
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;Return final markdown string with Answer and Web Search Results sections.&#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Display results in ascending [n] (discovery) order</span>
-</span></span><span style="display:flex;"><span>    ordered <span style="color:#f92672">=</span> sorted(all_results, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> r: r[<span style="color:#e6db74">&#34;num&#34;</span>])
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    results_md <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;## Web Search Results</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> ordered:
-</span></span><span style="display:flex;"><span>        results_md <span style="color:#f92672">+=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;- [</span><span style="color:#e6db74">{</span>r[<span style="color:#e6db74">&#39;num&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">] [</span><span style="color:#e6db74">{</span>r[<span style="color:#e6db74">&#39;title&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">](</span><span style="color:#e6db74">{</span>r[<span style="color:#e6db74">&#39;url&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;## Answer *(model: </span><span style="color:#e6db74">{</span>model_name<span style="color:#e6db74">}</span><span style="color:#e6db74">)*</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">{</span>answer_text<span style="color:#e6db74">}</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">---</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">{</span>results_md<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># --- Entry Point -------------------------------------------------------------</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-</span></span><span style="display:flex;"><span>    query <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;How was Claude Code implemented?&#34;</span>
-</span></span><span style="display:flex;"><span>    answer_text, all_results, model_name <span style="color:#f92672">=</span> run_agent(query)
-</span></span><span style="display:flex;"><span>    print(format_output(answer_text, all_results, model_name))
-</span></span></code></pre></div><hr>
-<h1 id="demo">Demo<a hidden class="anchor" aria-hidden="true" href="#demo">#</a></h1>
-<p>The demo can be run easily with a <a href="https://github.com/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.ipynb">Jupyter notebook version</a>: <a href="https://colab.research.google.com/github/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.ipynb"><img alt="Open In Colab" loading="lazy" src="https://colab.research.google.com/assets/colab-badge.svg"></a></p>
-<p>Example runs:</p>
-<ul>
-<li><a href="https://github.com/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.ipynb.demo.pdf">English query demo</a></li>
-<li><a href="https://github.com/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.ipynb.demo.chinese.pdf">Chinese query demo</a></li>
-</ul>
-<p>Here is an example result, which shows Web Search Tool Use, Synthesized Answer, Citations and ALL Web Search results collected:</p>
-<pre tabindex="0"><code>query = &#34;How was Claude Code implemented?&#34;  # &lt;- change this
+</code></pre><p>This is the shift from RAG to <strong>Agentic Search</strong> — and it&rsquo;s a core pattern behind modern AI chatbots and search engines.</p><p>I built V2 entirely through conversations with <strong>Claude Code</strong>.</p><hr><h1 id=what-changed-v1--v2>What Changed: V1 → V2<a hidden class=anchor aria-hidden=true href=#what-changed-v1--v2>#</a></h1><table><thead><tr><th></th><th>V1</th><th>V2</th></tr></thead><tbody><tr><td>Architecture</td><td>Simple RAG pipeline</td><td>Agent Loop with Tool Use</td></tr><tr><td>LLM calls per request</td><td>1</td><td>Up to <code>MAX_LOOP_TIMES</code> (default 3)</td></tr><tr><td>Search queries</td><td>1 fixed query</td><td>LLM-generated, multiple possible</td></tr><tr><td>Search results</td><td>Pre-fetched, static</td><td>Accumulated and deduplicated across iterations</td></tr><tr><td>LLM role</td><td>Passive (reads results)</td><td>Active (decides when/what to search)</td></tr></tbody></table><hr><h1 id=step-1-claude-code-update-claudemd>Step 1: Claude Code: Update CLAUDE.md<a hidden class=anchor aria-hidden=true href=#step-1-claude-code-update-claudemd>#</a></h1><p>I updated <code>CLAUDE.md</code> to describe the new V2 architecture — Agent Loop, Tool Use, and multiple LLM calls:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-markdown data-lang=markdown><span style=display:flex><span># CLAUDE.md
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Project
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>`ai_websearch`</span> is an AI-driven web search demo.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Input: User Query (Question)
+</span></span><span style=display:flex><span>Output Generation: 
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>1.</span> Web Search Result Section: list ALL Unique Web Search Results with:
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>*</span> Assigned result ranking number &#39;[n]&#39; based on discovery order
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>*</span> URL title as a clickable URL link
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>*</span> Summary snippet of the URL content
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>2.</span> LLM Answer Section: a markdown Answer to User Query with inline citations (<span style=color:#e6db74>`[n](URL)`</span>), around texts supported by the URL <span style=color:#e6db74>`[n]`</span>.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Architecture (Agent Loop, Tool Use, Multiple LLM Calls):
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>1.</span> Tool Use: define a function for Web Search via Tavily (top K &lt;= 10 results) as tool for LLM
+</span></span><span style=display:flex><span><span style=color:#66d9ef>2.</span> Run Agent Loop:
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>*</span> Init the Context with User Query
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>*</span> ask LLM with User Context to generate Output, providing the Web Search tool for LLM to use
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>*</span> check LLM response:
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>*</span> If the response is Tool Use (Web Search with LLM generated query), do the Web Search,
+</span></span><span style=display:flex><span>      collect the Search Results, add them to Context, and continue the Agent Loop
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>*</span> Otherwise, exit the Agent Loop and return the LLM response as Answer
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>*</span> add MAX_LOOP_TIMES (default=3) parameter, as maximal times the loop can run,
+</span></span><span style=display:flex><span>    which is also maximal number of LLM calls a request can incur.
+</span></span><span style=display:flex><span><span style=color:#66d9ef>3.</span> Generate Output as markdown, convert it to html, and display html in Jupyter notebook.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Tech Stack
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>-</span> Language: Python
+</span></span><span style=display:flex><span><span style=color:#66d9ef>-</span> Web search: Tavily Python SDK (<span style=color:#e6db74>`TavilyClient`</span>)
+</span></span><span style=display:flex><span><span style=color:#66d9ef>-</span> LLM: LiteLLM Python SDK (model is a selectable parameter, default to a cheap OpenAI model)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Code Structure
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>*</span> a single Jupyter notebook file
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Code Guidelines
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>-</span> Simple and concise; add key comments to explain non-obvious logic
+</span></span><span style=display:flex><span><span style=color:#66d9ef>-</span> Keep text cells in notebooks to explain reasoning between code cells
+</span></span></code></pre></div><hr><h1 id=step-2-ask-claude-code-to-build>Step 2: Ask Claude Code to Build<a hidden class=anchor aria-hidden=true href=#step-2-ask-claude-code-to-build>#</a></h1><p>With the updated <code>CLAUDE.md</code> in place, I entered Plan Mode:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>/plan
+</span></span></code></pre></div><p>Then asked:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>Based on CLAUDE.md, design the project.
+</span></span></code></pre></div><p>Claude Code (Sonnet 4.6 Model) read the CLAUDE.md and V1 code, generated a plan for me to review, in a few minutes. After I asked Claude to make some minor changes, I&rsquo;m happy with the design and asked Claude to proceed with coding. The code generated was good and worked on 1st attempt!</p><hr><h1 id=high-level-architecture>High-Level Architecture<a hidden class=anchor aria-hidden=true href=#high-level-architecture>#</a></h1><p>V2 replaces the static single-call pipeline with a dynamic agent loop:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-text data-lang=text><span style=display:flex><span>User Query
+</span></span><span style=display:flex><span>     |
+</span></span><span style=display:flex><span>     v
+</span></span><span style=display:flex><span>+------------------+
+</span></span><span style=display:flex><span>|  Agent Loop      |
+</span></span><span style=display:flex><span>|                  |
+</span></span><span style=display:flex><span>|  LLM Call        |
+</span></span><span style=display:flex><span>|    |             |
+</span></span><span style=display:flex><span>|    +-- Tool Use? --&gt; web_search(query)
+</span></span><span style=display:flex><span>|    |                     |
+</span></span><span style=display:flex><span>|    |               Search Results
+</span></span><span style=display:flex><span>|    |                     |
+</span></span><span style=display:flex><span>|    +&lt;--- add to context --+
+</span></span><span style=display:flex><span>|    |
+</span></span><span style=display:flex><span>|    +-- Plain Answer? --&gt; Exit Loop
+</span></span><span style=display:flex><span>|                               |
+</span></span><span style=display:flex><span>+------------------+            v
+</span></span><span style=display:flex><span>                         Format Output
+</span></span><span style=display:flex><span>                               |
+</span></span><span style=display:flex><span>                               v
+</span></span><span style=display:flex><span>                    Answer + Citations + Results
+</span></span></code></pre></div><p>The key idea: the LLM is given a <code>web_search</code> tool. On each loop iteration:</p><ul><li>If the LLM calls the tool, the results are collected into context and the loop continues</li><li>If the LLM returns a plain answer, the loop exits</li></ul><p>This allows the LLM to issue multiple, targeted search queries — refining its understanding before committing to an answer. Results are <strong>deduplicated</strong> across searches so each URL appears only once in the final output.</p><hr><h1 id=code>Code<a hidden class=anchor aria-hidden=true href=#code>#</a></h1><p>The entire application fits into a single Python file of ~124 lines (<a href=https://github.com/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.py>Github Link</a>):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>import</span> os<span style=color:#f92672>,</span> json<span style=color:#f92672>,</span> sys
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> litellm
+</span></span><span style=display:flex><span><span style=color:#f92672>from</span> tavily <span style=color:#f92672>import</span> TavilyClient
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># --- API Keys ----------------------------------------------------------------</span>
+</span></span><span style=display:flex><span>TAVILY_API_KEY <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;tvly-...&#34;</span>  <span style=color:#75715e># your Tavily API key</span>
+</span></span><span style=display:flex><span>OPENAI_API_KEY <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;sk-...&#34;</span>    <span style=color:#75715e># your OpenAI API key</span>
+</span></span><span style=display:flex><span>os<span style=color:#f92672>.</span>environ[<span style=color:#e6db74>&#34;OPENAI_API_KEY&#34;</span>] <span style=color:#f92672>=</span> OPENAI_API_KEY
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># --- Configuration -----------------------------------------------------------</span>
+</span></span><span style=display:flex><span>MODEL          <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;gpt-4o-mini&#34;</span>  <span style=color:#75715e># change to e.g. &#34;gpt-4o&#34;, &#34;claude-3-5-haiku-20241022&#34;</span>
+</span></span><span style=display:flex><span>TOP_K          <span style=color:#f92672>=</span> <span style=color:#ae81ff>10</span>             <span style=color:#75715e># max web results per search</span>
+</span></span><span style=display:flex><span>MAX_LOOP_TIMES <span style=color:#f92672>=</span> <span style=color:#ae81ff>3</span>              <span style=color:#75715e># max LLM calls per request (including final answer)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>litellm<span style=color:#f92672>.</span>set_verbose <span style=color:#f92672>=</span> <span style=color:#66d9ef>False</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># --- Step 1: Web Search Tool -------------------------------------------------</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>search_web</span>(query, k<span style=color:#f92672>=</span>TOP_K):
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;Return top-k Tavily results for query.&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    response <span style=color:#f92672>=</span> TavilyClient(api_key<span style=color:#f92672>=</span>TAVILY_API_KEY)<span style=color:#f92672>.</span>search(query, max_results<span style=color:#f92672>=</span>k)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> response[<span style=color:#e6db74>&#34;results&#34;</span>]  <span style=color:#75715e># each: {title, url, content, score}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>WEB_SEARCH_TOOL <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;function&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;function&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;web_search&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;Search the web for current information on a topic.&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;parameters&#34;</span>: {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;object&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;properties&#34;</span>: {
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;query&#34;</span>: {<span style=color:#e6db74>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>, <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;The search query&#34;</span>}
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;required&#34;</span>: [<span style=color:#e6db74>&#34;query&#34;</span>]
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># --- Step 2: Agent Loop ------------------------------------------------------</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>SYSTEM_PROMPT <span style=color:#f92672>=</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;You are a helpful research assistant with access to a web_search tool. &#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;Use it to find information needed to answer the user&#39;s query; you may search multiple times with different queries. &#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;Each search result is labeled [n] with its URL. &#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;Cite supporting text in your answer as [n](URL) using those numbers. &#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;When you have enough information, write a clear, comprehensive markdown answer.&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>run_agent</span>(query, model<span style=color:#f92672>=</span>MODEL, max_loops<span style=color:#f92672>=</span>MAX_LOOP_TIMES):
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;Run the agent loop; return (answer_text, all_results, model_name).&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    seen_urls <span style=color:#f92672>=</span> {}   <span style=color:#75715e># url -&gt; result dict (augmented with &#34;num&#34; key)</span>
+</span></span><span style=display:flex><span>    counter   <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>    <span style=color:#75715e># global discovery counter across all searches</span>
+</span></span><span style=display:flex><span>    messages  <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>        {<span style=color:#e6db74>&#34;role&#34;</span>: <span style=color:#e6db74>&#34;system&#34;</span>, <span style=color:#e6db74>&#34;content&#34;</span>: SYSTEM_PROMPT},
+</span></span><span style=display:flex><span>        {<span style=color:#e6db74>&#34;role&#34;</span>: <span style=color:#e6db74>&#34;user&#34;</span>,   <span style=color:#e6db74>&#34;content&#34;</span>: query},
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    last_content <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    model_name   <span style=color:#f92672>=</span> model
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> loop_num <span style=color:#f92672>in</span> range(max_loops):
+</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>[Loop </span><span style=color:#e6db74>{</span>loop_num <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span><span style=color:#e6db74>}</span><span style=color:#e6db74>] Calling LLM...&#34;</span>, file<span style=color:#f92672>=</span>sys<span style=color:#f92672>.</span>stderr)
+</span></span><span style=display:flex><span>        response <span style=color:#f92672>=</span> litellm<span style=color:#f92672>.</span>completion(
+</span></span><span style=display:flex><span>            model<span style=color:#f92672>=</span>model, messages<span style=color:#f92672>=</span>messages,
+</span></span><span style=display:flex><span>            tools<span style=color:#f92672>=</span>[WEB_SEARCH_TOOL], tool_choice<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;auto&#34;</span>
+</span></span><span style=display:flex><span>        )
+</span></span><span style=display:flex><span>        msg        <span style=color:#f92672>=</span> response<span style=color:#f92672>.</span>choices[<span style=color:#ae81ff>0</span>]<span style=color:#f92672>.</span>message
+</span></span><span style=display:flex><span>        model_name <span style=color:#f92672>=</span> response<span style=color:#f92672>.</span>model  <span style=color:#75715e># actual model name returned by the API</span>
+</span></span><span style=display:flex><span>        last_content <span style=color:#f92672>=</span> msg<span style=color:#f92672>.</span>content <span style=color:#f92672>or</span> <span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> msg<span style=color:#f92672>.</span>tool_calls:  <span style=color:#75715e># LLM produced a plain answer — exit loop</span>
+</span></span><span style=display:flex><span>            print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;[Loop </span><span style=color:#e6db74>{</span>loop_num <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span><span style=color:#e6db74>}</span><span style=color:#e6db74>] LLM returned answer. Exiting loop.&#34;</span>, file<span style=color:#f92672>=</span>sys<span style=color:#f92672>.</span>stderr)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> last_content, list(seen_urls<span style=color:#f92672>.</span>values()), model_name
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># --- Execute tool calls and add results to context ---</span>
+</span></span><span style=display:flex><span>        messages<span style=color:#f92672>.</span>append(msg)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> tc <span style=color:#f92672>in</span> msg<span style=color:#f92672>.</span>tool_calls:
+</span></span><span style=display:flex><span>            search_query <span style=color:#f92672>=</span> json<span style=color:#f92672>.</span>loads(tc<span style=color:#f92672>.</span>function<span style=color:#f92672>.</span>arguments)[<span style=color:#e6db74>&#34;query&#34;</span>]
+</span></span><span style=display:flex><span>            print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;[Loop </span><span style=color:#e6db74>{</span>loop_num <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span><span style=color:#e6db74>}</span><span style=color:#e6db74>] Tool call: web_search(&#39;</span><span style=color:#e6db74>{</span>search_query<span style=color:#e6db74>}</span><span style=color:#e6db74>&#39;)&#34;</span>, file<span style=color:#f92672>=</span>sys<span style=color:#f92672>.</span>stderr)
+</span></span><span style=display:flex><span>            results <span style=color:#f92672>=</span> search_web(search_query)
+</span></span><span style=display:flex><span>            print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;[Loop </span><span style=color:#e6db74>{</span>loop_num <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span><span style=color:#e6db74>}</span><span style=color:#e6db74>] Got </span><span style=color:#e6db74>{</span>len(results)<span style=color:#e6db74>}</span><span style=color:#e6db74> results&#34;</span>, file<span style=color:#f92672>=</span>sys<span style=color:#f92672>.</span>stderr)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            tool_text <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> r <span style=color:#f92672>in</span> results:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> r[<span style=color:#e6db74>&#34;url&#34;</span>] <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> seen_urls:  <span style=color:#75715e># deduplicate; first occurrence wins</span>
+</span></span><span style=display:flex><span>                    counter <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>                    r[<span style=color:#e6db74>&#34;num&#34;</span>] <span style=color:#f92672>=</span> counter
+</span></span><span style=display:flex><span>                    seen_urls[r[<span style=color:#e6db74>&#34;url&#34;</span>]] <span style=color:#f92672>=</span> r
+</span></span><span style=display:flex><span>                num <span style=color:#f92672>=</span> seen_urls[r[<span style=color:#e6db74>&#34;url&#34;</span>]][<span style=color:#e6db74>&#34;num&#34;</span>]
+</span></span><span style=display:flex><span>                tool_text <span style=color:#f92672>+=</span> <span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;[</span><span style=color:#e6db74>{</span>num<span style=color:#e6db74>}</span><span style=color:#e6db74>] </span><span style=color:#e6db74>{</span>r[<span style=color:#e6db74>&#39;title&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>URL: </span><span style=color:#e6db74>{</span>r[<span style=color:#e6db74>&#39;url&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>{</span>r[<span style=color:#e6db74>&#39;content&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#ae81ff>\n\n</span><span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            messages<span style=color:#f92672>.</span>append({
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;role&#34;</span>: <span style=color:#e6db74>&#34;tool&#34;</span>, <span style=color:#e6db74>&#34;tool_call_id&#34;</span>: tc<span style=color:#f92672>.</span>id,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;web_search&#34;</span>, <span style=color:#e6db74>&#34;content&#34;</span>: tool_text
+</span></span><span style=display:flex><span>            })
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># Max loops reached — return whatever the LLM last said</span>
+</span></span><span style=display:flex><span>    print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;[Loop </span><span style=color:#e6db74>{</span>max_loops<span style=color:#e6db74>}</span><span style=color:#e6db74>] Max loops reached. Returning last LLM response.&#34;</span>, file<span style=color:#f92672>=</span>sys<span style=color:#f92672>.</span>stderr)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> last_content, list(seen_urls<span style=color:#f92672>.</span>values()), model_name
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># --- Step 3: Format Output ---------------------------------------------------</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>format_output</span>(answer_text, all_results, model_name):
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;Return final markdown string with Answer and Web Search Results sections.&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># Display results in ascending [n] (discovery) order</span>
+</span></span><span style=display:flex><span>    ordered <span style=color:#f92672>=</span> sorted(all_results, key<span style=color:#f92672>=</span><span style=color:#66d9ef>lambda</span> r: r[<span style=color:#e6db74>&#34;num&#34;</span>])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    results_md <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;## Web Search Results</span><span style=color:#ae81ff>\n\n</span><span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> r <span style=color:#f92672>in</span> ordered:
+</span></span><span style=display:flex><span>        results_md <span style=color:#f92672>+=</span> <span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;- [</span><span style=color:#e6db74>{</span>r[<span style=color:#e6db74>&#39;num&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>] [</span><span style=color:#e6db74>{</span>r[<span style=color:#e6db74>&#39;title&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>](</span><span style=color:#e6db74>{</span>r[<span style=color:#e6db74>&#39;url&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>)</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;## Answer *(model: </span><span style=color:#e6db74>{</span>model_name<span style=color:#e6db74>}</span><span style=color:#e6db74>)*</span><span style=color:#ae81ff>\n\n</span><span style=color:#e6db74>{</span>answer_text<span style=color:#e6db74>}</span><span style=color:#ae81ff>\n\n</span><span style=color:#e6db74>---</span><span style=color:#ae81ff>\n\n</span><span style=color:#e6db74>{</span>results_md<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># --- Entry Point -------------------------------------------------------------</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> __name__ <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;__main__&#34;</span>:
+</span></span><span style=display:flex><span>    query <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;How was Claude Code implemented?&#34;</span>
+</span></span><span style=display:flex><span>    answer_text, all_results, model_name <span style=color:#f92672>=</span> run_agent(query)
+</span></span><span style=display:flex><span>    print(format_output(answer_text, all_results, model_name))
+</span></span></code></pre></div><hr><h1 id=demo>Demo<a hidden class=anchor aria-hidden=true href=#demo>#</a></h1><p>The demo can be run easily with a <a href=https://github.com/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.ipynb>Jupyter notebook version</a>: <a href=https://colab.research.google.com/github/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.ipynb><img alt="Open In Colab" loading=lazy src=https://colab.research.google.com/assets/colab-badge.svg></a></p><p>Example runs:</p><ul><li><a href=https://github.com/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.ipynb.demo.pdf>English query demo</a></li><li><a href=https://github.com/tiejun-ai/ai_websearch/blob/main/v2/ai_websearch.ipynb.demo.chinese.pdf>Chinese query demo</a></li></ul><p>Here is an example result, which shows Web Search Tool Use, Synthesized Answer, Citations and ALL Web Search results collected:</p><pre tabindex=0><code>query = &#34;How was Claude Code implemented?&#34;  # &lt;- change this
 
 answer_text, all_results, model_name = run_agent(query)
 output_md = format_output(answer_text, all_results, model_name)
 display_answer(output_md)
-</code></pre><p>Output:</p>
-<pre tabindex="0"><code>[Loop 1] Calling LLM...
+</code></pre><p>Output:</p><pre tabindex=0><code>[Loop 1] Calling LLM...
 [Loop 1] Tool call: web_search(&#39;Claude Code implementation details&#39;)
 [Loop 1] Got 10 results
 
@@ -478,115 +276,8 @@ Web Search Results
 [16] Introducing Claude Design by Anthropic Labs
 [17] Claude Code is brilliant at churning out code but terrible at architecture
 [18] How I use Claude Code to keep my architecture decisions on track
-</code></pre><hr>
-<h1 id="debugging-and-iterations">Debugging and Iterations<a hidden class="anchor" aria-hidden="true" href="#debugging-and-iterations">#</a></h1>
-<p>Testing did show bugs in Citation and Web Search results presentation. For each of the bugs found, I just told Claude Code about the bug, and Claude was able to fix it easily.</p>
-<hr>
-<h1 id="lessons-learned">Lessons Learned<a hidden class="anchor" aria-hidden="true" href="#lessons-learned">#</a></h1>
-<h2 id="agentic-architecture-enables-intelligence">Agentic Architecture enables Intelligence<a hidden class="anchor" aria-hidden="true" href="#agentic-architecture-enables-intelligence">#</a></h2>
-<p>In V2, LLM can reformulate its search query, fetch more targeted results, evaluate Web Search results, and build a richer context before answering. This process is similar to what a human does when searching the web. With an Agentic Architecture, LLM can drive the workflow and enable its intelligence where it is needed.</p>
-<h2 id="tool-use-is-a-clean-abstraction">Tool Use Is a Clean Abstraction<a hidden class="anchor" aria-hidden="true" href="#tool-use-is-a-clean-abstraction">#</a></h2>
-<p>Defining <code>web_search</code> as a JSON schema tool and letting the LLM decide when to call it is cleaner than pre-fetching results. The LLM&rsquo;s tool-calling behavior is predictable and easy to inspect from the loop logs — you can see exactly which queries it chose and why.</p>
-<h2 id="max_loop_times-is-a-critical-guard"><code>MAX_LOOP_TIMES</code> Is a Critical Guard<a hidden class="anchor" aria-hidden="true" href="#max_loop_times-is-a-critical-guard">#</a></h2>
-<p>Without a loop cap, an agent can spiral: it searches, finds partial results, searches again, and never commits to an answer. <code>MAX_LOOP_TIMES=3</code> gives the LLM enough room to be thorough while bounding latency and API costs. In practice, most queries resolve in 1–2 loops.</p>
-<h2 id="claudemd-architecture-descriptions-work-well">CLAUDE.md Architecture Descriptions Work Well<a hidden class="anchor" aria-hidden="true" href="#claudemd-architecture-descriptions-work-well">#</a></h2>
-<p>Describing the Agent Loop in <code>CLAUDE.md</code> as a step-by-step spec — tool definition, loop logic, exit conditions — gave Claude Code exactly what it needed to generate correct code. The more precise the architecture description, the less iteration is needed.</p>
-<hr>
-<h1 id="final-thoughts">Final Thoughts<a hidden class="anchor" aria-hidden="true" href="#final-thoughts">#</a></h1>
-<p>V2 demonstrates a fundamental architectural shift: from LLM-as-reader to LLM-as-agent. The code is only modestly more complex than V1 (~124 lines vs. ~81 lines), but the behavior is qualitatively different. The LLM actively drives the Web Search process, similar to the Web Search process of a human.</p>
-<p>This pattern — Agentic Loop + Tool Use — is the foundation of how modern AI assistants like Gemini, Perplexity, ChatGPT, and Claude work under the hood. Building it from scratch in ~100 lines is enjoyable and educational.</p>
-<p>Claude Code made the development easy: describe the architecture in <code>CLAUDE.md</code>, ask it to design, build, debug and iterate. AI Coding is clearly effective and enjoyable!</p>
-<hr>
-<p>Enjoyed this article? ⭐ <a href="https://github.com/tiejun-ai/ai_websearch">Star the repo</a> on GitHub!</p>
-
-
-  </div>
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-    </ul>
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="http://localhost:1313/">AI Engineering Journal: Joy, Thoughts and Practice</a></span> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-</body>
-
-</html>
+</code></pre><hr><h1 id=debugging-and-iterations>Debugging and Iterations<a hidden class=anchor aria-hidden=true href=#debugging-and-iterations>#</a></h1><p>Testing did show bugs in Citation and Web Search results presentation. For each of the bugs found, I just told Claude Code about the bug, and Claude was able to fix it easily.</p><hr><h1 id=lessons-learned>Lessons Learned<a hidden class=anchor aria-hidden=true href=#lessons-learned>#</a></h1><h2 id=agentic-architecture-enables-intelligence>Agentic Architecture enables Intelligence<a hidden class=anchor aria-hidden=true href=#agentic-architecture-enables-intelligence>#</a></h2><p>In V2, LLM can reformulate its search query, fetch more targeted results, evaluate Web Search results, and build a richer context before answering. This process is similar to what a human does when searching the web. With an Agentic Architecture, LLM can drive the workflow and enable its intelligence where it is needed.</p><h2 id=tool-use-is-a-clean-abstraction>Tool Use Is a Clean Abstraction<a hidden class=anchor aria-hidden=true href=#tool-use-is-a-clean-abstraction>#</a></h2><p>Defining <code>web_search</code> as a JSON schema tool and letting the LLM decide when to call it is cleaner than pre-fetching results. The LLM&rsquo;s tool-calling behavior is predictable and easy to inspect from the loop logs — you can see exactly which queries it chose and why.</p><h2 id=max_loop_times-is-a-critical-guard><code>MAX_LOOP_TIMES</code> Is a Critical Guard<a hidden class=anchor aria-hidden=true href=#max_loop_times-is-a-critical-guard>#</a></h2><p>Without a loop cap, an agent can spiral: it searches, finds partial results, searches again, and never commits to an answer. <code>MAX_LOOP_TIMES=3</code> gives the LLM enough room to be thorough while bounding latency and API costs. In practice, most queries resolve in 1–2 loops.</p><h2 id=claudemd-architecture-descriptions-work-well>CLAUDE.md Architecture Descriptions Work Well<a hidden class=anchor aria-hidden=true href=#claudemd-architecture-descriptions-work-well>#</a></h2><p>Describing the Agent Loop in <code>CLAUDE.md</code> as a step-by-step spec — tool definition, loop logic, exit conditions — gave Claude Code exactly what it needed to generate correct code. The more precise the architecture description, the less iteration is needed.</p><hr><h1 id=final-thoughts>Final Thoughts<a hidden class=anchor aria-hidden=true href=#final-thoughts>#</a></h1><p>V2 demonstrates a fundamental architectural shift: from LLM-as-reader to LLM-as-agent. The code is only modestly more complex than V1 (~124 lines vs. ~81 lines), but the behavior is qualitatively different. The LLM actively drives the Web Search process, similar to the Web Search process of a human.</p><p>This pattern — Agentic Loop + Tool Use — is the foundation of how modern AI assistants like Gemini, Perplexity, ChatGPT, and Claude work under the hood. Building it from scratch in ~100 lines is enjoyable and educational.</p><p>Claude Code made the development easy: describe the architecture in <code>CLAUDE.md</code>, ask it to design, build, debug and iterate. AI Coding is clearly effective and enjoyable!</p><hr><p>Enjoyed this article? ⭐ <a href=https://github.com/tiejun-ai/ai_websearch>Star the repo</a> on GitHub!</p></div><footer class=post-footer><ul class=post-tags></ul></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://tiejun-ai.github.io/>AI Engineering Journal: Joy, Thoughts and Practice</a></span> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script></body></html>
