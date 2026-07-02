@@ -1,241 +1,13 @@
-<!DOCTYPE html>
-<html lang="en" dir="auto" data-theme="auto">
-
-<head><meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
-<title>Anthropic RAG Architecture: Contextual Retrieval | AI Engineering Journal: Joy, Thoughts and Practice</title>
-<meta name="keywords" content="">
-<meta name="description" content="How Anthropic architected their RAG system — Hybrid Retrieval &#43; Contextual Retrieval &#43; Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.">
-<meta name="author" content="">
-<link rel="canonical" href="https://tiejun-ai.github.io/posts/contextual_retrieval/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://tiejun-ai.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://tiejun-ai.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://tiejun-ai.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://tiejun-ai.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://tiejun-ai.github.io/safari-pinned-tab.svg">
-<meta name="theme-color" content="#2e2e33">
-<meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://tiejun-ai.github.io/posts/contextual_retrieval/">
-<noscript>
-    <style>
-        #theme-toggle,
-        .top-link {
-            display: none;
-        }
-
-    </style>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --theme: rgb(29, 30, 32);
-                --entry: rgb(46, 46, 51);
-                --primary: rgb(218, 218, 219);
-                --secondary: rgb(155, 156, 157);
-                --tertiary: rgb(65, 66, 68);
-                --content: rgb(196, 196, 197);
-                --code-block-bg: rgb(46, 46, 51);
-                --code-bg: rgb(55, 56, 62);
-                --border: rgb(51, 51, 51);
-                color-scheme: dark;
-            }
-
-            .list {
-                background: var(--theme);
-            }
-
-            .toc {
-                background: var(--entry);
-            }
-        }
-
-    </style>
-</noscript>
-<script>
-    if (localStorage.getItem("pref-theme") === "dark") {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else if (localStorage.getItem("pref-theme") === "light") {
-       document.querySelector("html").dataset.theme = 'light';
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector("html").dataset.theme = 'dark';
-    } else {
-        document.querySelector("html").dataset.theme = 'light';
-    }
-
-</script><meta property="og:url" content="https://tiejun-ai.github.io/posts/contextual_retrieval/">
-  <meta property="og:site_name" content="AI Engineering Journal: Joy, Thoughts and Practice">
-  <meta property="og:title" content="Anthropic RAG Architecture: Contextual Retrieval">
-  <meta property="og:description" content="How Anthropic architected their RAG system — Hybrid Retrieval &#43; Contextual Retrieval &#43; Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2026-07-01T00:00:00-07:00">
-    <meta property="article:modified_time" content="2026-07-01T00:00:00-07:00">
-
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Anthropic RAG Architecture: Contextual Retrieval">
-  <meta name="twitter:description" content="How Anthropic architected their RAG system — Hybrid Retrieval &#43; Contextual Retrieval &#43; Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "https://tiejun-ai.github.io/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "Anthropic RAG Architecture: Contextual Retrieval",
-      "item": "https://tiejun-ai.github.io/posts/contextual_retrieval/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "Anthropic RAG Architecture: Contextual Retrieval",
-  "name": "Anthropic RAG Architecture: Contextual Retrieval",
-  "description": "How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.",
-  "keywords": [
-    
-  ],
-  "articleBody": "How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.\nAnthropic Engineering Blog: Introducing Contextual Retrieval\nTL;DR Anthropic’s engineering blog describes their RAG architecture, built on three pieces:\nHybrid Retrieval + Contextual Retrieval + Reranker\nThe key idea is this:\nInstead of chopping a document into chunks and embedding each chunk directly, first prepend a short “context blurb” to every chunk — then index that.\nThat one change, plus hybrid search and reranking, cuts the retrieval failure rate dramatically.\n1. Hybrid Retrieval: Embedding + BM25 The standard RAG system uses embedding semantic search for retrieval. But embeddings alone are shaky, especially for:\nerror codes product model numbers people’s names proper nouns code symbols exact strings For example, a user asks:\nWhat does error code TS-999 mean? This query needs an exact match on TS-999. Here traditional BM25 / keyword search is often more reliable than embeddings.\nSo a stronger retrieval architecture usually combines both:\nHybrid Retrieval = Embedding Semantic Search + BM25 Text Search Embedding handles semantic understanding; BM25 handles exact matching. The two complement each other.\nRank fusion. Embedding search and BM25 each return their own ranked list. Rank fusion merges the two lists into one. Common techniques:\nReciprocal Rank Fusion (RRF) — the most popular choice. It ignores the raw scores and uses only each document’s rank in each list, summing 1 / (k + rank) across lists (with a constant like k = 60). Because it works on ranks, it needs no score normalization and is robust across very different scoring systems. See the original paper, Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods (Cormack et al., 2009). Weighted score fusion — normalize each list’s scores (e.g., min-max) to a common range, then take a weighted sum (α · embedding_score + (1 − α) · BM25_score). More tunable, but sensitive to how you normalize. Which one does Anthropic use? The blog just says “rank fusion techniques,” but their cookbook code reveals: rank-based scoring like RRF, but with per-source weights. Each chunk’s score is weight · 1 / (rank + 1) summed over the two lists, with the semantic list weighted 0.8 and BM25 weighted 0.2 — so semantic search dominates and BM25 breaks ties and rescues exact-match cases:\nscore(chunk) = 0.8 · 1/(semantic_rank + 1) + 0.2 · 1/(bm25_rank + 1) 2. The Problem with Standard RAG: Chunks Lose Context RAG normally splits a large document into many small chunks, then embeds each one:\nEmbedding(chunk) = EmbeddingModel(chunk) The problem: once a chunk is cut out, it usually loses the context of the original document.\nSuppose a chunk is just one sentence:\nThe company's revenue grew by 3%. But it doesn’t say:\nWhich company? Which quarter? Which financial report? Compared to which previous quarter? As a result, the RAG retriever has a hard time judging whether this chunk is relevant to the user’s question.\n3. Contextual Retrieval: Give Every Chunk Its Context Back Anthropic’s method: at indexing time, use an LLM to read both:\nthe whole document + the current chunk Then generate a short 50–100 token background blurb for that chunk, and prepend it to the original chunk:\nContextualChunk(chunk) = LLM_Context(document, chunk) + chunk The prompt Anthropic uses is roughly:\n{{WHOLE_DOCUMENT}} Here is the chunk we want to situate within the whole document {{CHUNK_CONTENT}} Please give a short succinct context to situate this chunk within the overall document for the purposes of improving search retrieval of the chunk. Answer only with the succinct context and nothing else. Example.\nOriginal chunk:\nThe company's revenue grew by 3%. LLM-generated chunk:\nThis chunk is from Meta's Q2 2023 earnings report; it describes the revenue change for that quarter relative to the previous quarter. The company's revenue grew by 3%. Now the chunk itself carries far more semantic anchors:\nMeta / 2023 Q2 / earnings / revenue / QoQ growth …which makes it much easier for the retrieval system to recall.\nHow this differs from other approaches Anthropic also experimented with other ways to add context to chunks, but none worked as well as Contextual Retrieval:\nAdding a generic document summary to each chunk → only marginal gains in their experiments. Hypothetical Document Embedding (HyDE) → generate a hypothetical relevant document, then embed it. Summary-based indexing → build the index from summaries — lower performance in their experiments. The key distinction:\nContextual Retrieval does not summarize the whole document, and does not generate a hypothetical document — it generates chunk-specific context for each chunk.\nIn other words, the LLM’s job here isn’t to answer a question — it’s to improve the chunk representation during offline indexing.\nPrompt Caching: what makes this affordable Running an LLM over every chunk sounds expensive — and naively it is. The context prompt includes the whole document each time (so the model can situate the chunk), and a long document may split into dozens or hundreds of chunks. Passing the full document once per chunk would mean re-reading the same document tokens over and over.\nPrompt caching removes that waste. Prompt caching optimizes your API usage by allowing resuming from specific prefixes in your prompts. This significantly reduces processing time and costs for repetitive tasks or prompts with consistent elements. As Anthropic puts it:\nWith prompt caching, you don’t need to pass in the reference document for every chunk. You simply load the document into the cache once and then reference the previously cached content.\nMechanically, you place the whole document at the front of the prompt and mark it as cacheable:\nPrompt = [ WHOLE_DOCUMENT (cached, written once) ] + [ this chunk + instruction (per call) ] The result is cheap enough to be practical. Using Claude 3 Haiku (a cheap and smaller model), Anthropic reports a one-time cost of $1.02 per million document tokens to generate the contextualized chunks.\n4. The Full RAG Pipeline and Architecture Offline indexing stage:\nRaw document → split into chunks → generate a contextual summary for each chunk → context + chunk → build embedding index → build BM25 index Online query stage:\nUser question → Embedding Search → BM25 Search → fuse results → Reranking → select top chunks → put into LLM context → generate answer Putting the two halves together — Contextual Retrieval at preprocessing and reranking at runtime — gives the full architecture:\n5. Reranking Also Matters Beyond Contextual Retrieval, Anthropic’s experiments also add reranking. The rough flow:\nRetrieve a batch of candidate chunks → re-order with a reranker → keep the most relevant top-K chunks → put into the LLM They used a Cohere reranker.\nThe value of reranking is a division of labor:\nFirst stage — retrieval is responsible for “don’t miss anything.” Second stage — reranker is responsible for “order it more precisely.” Why rerank? Two reasons:\nHigher answer quality — the model only sees the most accurate information, with less distraction. The reranker model is generally much more sophisticated and powerful than the embedding model and BM25 scoring used in retrieval. Lower cost and latency — fewer tokens fed into the LLM’s context window, which also means quicker answer generation. The three steps of reranking:\nBroad initial retrieval — quickly pull the most likely candidates from the index (e.g., top 150 chunks). Feed into the reranker — send those 150 chunks plus the user’s original question into a dedicated reranker model. Score and select — the reranker scores each chunk’s relevance and selects only the top-K to feed to the LLM. 6. Top-K Needs Tuning Too Anthropic found that putting top-20 chunks into the LLM context worked better than top-5 or top-10.\nThis matches real-world RAG experience:\ntop-K too small → easy to miss key information. top-K too large → introduces noise, raises cost and latency. optimal top-K must be found empirically, per task and dataset. In their setting, top-20 was the better choice.\n7. Final Results Anthropic’s experiments show the failure rate dropping at each step:\nBaseline failure rate: 5.7% Contextual Embeddings: 3.7% Contextual Embeddings + Contextual BM25: 2.9% + Reranking: 1.9% In other words:\nContextual Retrieval + Hybrid Search + Reranking significantly reduces the retrieval failure rate.\nStacking Reranked Contextual Embedding + Contextual BM25 cuts the top-20-chunk retrieval failure rate by 67%.\nMy Thoughts on Anthropic’s RAG Architecture Simple yet powerful LLM-driven indexing. Using an LLM to generate contextual chunk indexes is simple yet powerful.\nPrompt caching makes it affordable. Generating a context blurb per chunk with an LLM sounds expensive, but because the whole document sits in cache for every chunk, prompt caching keeps the cost low.\nHybrid Retrieval, Rank Fusion, and Reranking form the canonical components of a modern RAG-based AI application architecture.\nBig Picture\nAn important lesson learned here is to use LLMs to improve your data representation. As inference gets cheaper, more of the classic data pipeline becomes a place to spend LLM tokens for better downstream quality.\nAnthropic’s Contextual Retrieval pioneered an effective LLM-driven approach. In newer AI agent systems such as Claude Code, traditional RAG indexing is replaced by a simple grep over files. It remains an open question how to do RAG indexing and architect RAG applications better and more effectively. More research and development will continue to improve this important area of AI engineering.\nKey Takeaways Hybrid Retrieval = Embedding (semantic) + BM25 (exact match) — the two cover each other’s blind spots. The problem: chunks lose their document context, so embeddings can’t tell if they’re relevant. Contextual Retrieval: at indexing time, an LLM writes a 50–100 token, chunk-specific context blurb and prepends it to each chunk — for both the embedding and BM25 indexes. Reranking: a second stage that re-orders a broad candidate set (e.g., 150 → top-20) for precision, lower cost, and lower latency. Results: Contextual Retrieval + Hybrid Search + Reranking drops the failure rate from 5.7% to 1.9% — a 67% reduction. Core lesson: the power and magic of LLMs can help solve data-processing problems (e.g., RAG indexing) too. References Anthropic (2024). Introducing Contextual Retrieval. anthropic.com/news/contextual-retrieval Gao, L., Ma, X., Lin, J., \u0026 Callan, J. (2022). Precise Zero-Shot Dense Retrieval without Relevance Labels (HyDE). arxiv.org/abs/2212.10496 Cormack, G. V., Clarke, C. L. A., \u0026 Buettcher, S. (2009). Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods. SIGIR. cormack.uwaterloo.ca/cormacksigir09-rrf.pdf Anthropic Cookbook. Contextual Embeddings guide (hybrid search fusion implementation). github.com/anthropics/anthropic-cookbook Anthropic. Prompt caching (documentation). platform.claude.com/docs/en/build-with-claude/prompt-caching Enjoyed this article? ⭐ Star the repo on GitHub!\n",
-  "wordCount" : "1774",
-  "inLanguage": "en",
-  "datePublished": "2026-07-01T00:00:00-07:00",
-  "dateModified": "2026-07-01T00:00:00-07:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://tiejun-ai.github.io/posts/contextual_retrieval/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "AI Engineering Journal: Joy, Thoughts and Practice",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://tiejun-ai.github.io/favicon.ico"
-    }
-  }
-}
-</script>
-</head>
-<body id="top">
-    <header class="header">
-    <nav class="header-nav">
-        <div class="logo">
-            <a href="https://tiejun-ai.github.io/" accesskey="h" title="AI Engineering Journal: Joy, Thoughts and Practice (Alt + H)">AI Engineering Journal: Joy, Thoughts and Practice</a>
-            <div class="logo-switches">
-                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
-                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                        <line x1="1" y1="12" x2="3" y2="12"></line>
-                        <line x1="21" y1="12" x2="23" y2="12"></line>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <ul id="menu" class="menu">
-        </ul>
-    </nav>
-</header>
-<main class="main">
-
-<article class="post-single">
-  <header class="post-header">
-    
-    <h1 class="post-title entry-hint-parent">
-      Anthropic RAG Architecture: Contextual Retrieval
-    </h1>
-    <div class="post-meta">
-
-<span title='2026-07-01 00:00:00 -0700 PDT'>July 1, 2026</span>
-
-</div>
-  </header> 
-  <div class="post-content md-content"><p><em>How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.</em></p>
-<blockquote>
-<p>Anthropic Engineering Blog: <a href="https://www.anthropic.com/news/contextual-retrieval">Introducing Contextual Retrieval</a></p>
-</blockquote>
-<hr>
-<h2 id="tldr">TL;DR<a hidden class="anchor" aria-hidden="true" href="#tldr">#</a></h2>
-<p>Anthropic&rsquo;s engineering blog describes their RAG architecture, built on three pieces:</p>
-<p><strong>Hybrid Retrieval + Contextual Retrieval + Reranker</strong></p>
-<p>The key idea is this:</p>
-<blockquote>
-<p>Instead of chopping a document into chunks and embedding each chunk directly, first prepend a short &ldquo;context blurb&rdquo; to every chunk — then index that.</p>
-</blockquote>
-<p>That one change, plus hybrid search and reranking, cuts the retrieval failure rate dramatically.</p>
-<hr>
-<h2 id="1-hybrid-retrieval-embedding--bm25">1. Hybrid Retrieval: Embedding + BM25<a hidden class="anchor" aria-hidden="true" href="#1-hybrid-retrieval-embedding--bm25">#</a></h2>
-<p>The standard RAG system uses <strong>embedding semantic search</strong> for retrieval. But embeddings alone are shaky, especially for:</p>
-<ul>
-<li>error codes</li>
-<li>product model numbers</li>
-<li>people&rsquo;s names</li>
-<li>proper nouns</li>
-<li>code symbols</li>
-<li>exact strings</li>
-</ul>
-<p>For example, a user asks:</p>
-<pre tabindex="0"><code>What does error code TS-999 mean?
-</code></pre><p>This query needs an <em>exact</em> match on <code>TS-999</code>. Here traditional <strong>BM25 / keyword search</strong> is often more reliable than embeddings.</p>
-<p>So a stronger retrieval architecture usually combines both:</p>
-<pre tabindex="0"><code>Hybrid Retrieval = Embedding Semantic Search + BM25 Text Search
-</code></pre><p>Embedding handles <strong>semantic understanding</strong>; BM25 handles <strong>exact matching</strong>. The two complement each other.</p>
-<p><strong>Rank fusion.</strong> Embedding search and BM25 each return their own ranked list. <strong>Rank fusion</strong> merges the two lists into one. Common techniques:</p>
-<ul>
-<li><strong>Reciprocal Rank Fusion (RRF)</strong> — the most popular choice. It ignores the raw scores and uses only each document&rsquo;s <em>rank</em> in each list, summing <code>1 / (k + rank)</code> across lists (with a constant like <code>k = 60</code>). Because it works on ranks, it needs no score normalization and is robust across very different scoring systems. See the original paper, <a href="https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf">Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods</a> (Cormack et al., 2009).</li>
-<li><strong>Weighted score fusion</strong> — normalize each list&rsquo;s scores (e.g., min-max) to a common range, then take a weighted sum (<code>α · embedding_score + (1 − α) · BM25_score</code>). More tunable, but sensitive to how you normalize.</li>
-</ul>
-<p><strong>Which one does Anthropic use?</strong> The blog just says &ldquo;rank fusion techniques,&rdquo; but their <a href="https://github.com/anthropics/anthropic-cookbook/blob/main/capabilities/contextual-embeddings/guide.ipynb">cookbook code</a> reveals: rank-based scoring like RRF, but with per-source <strong>weights</strong>. Each chunk&rsquo;s score is <code>weight · 1 / (rank + 1)</code> summed over the two lists, with the semantic list weighted <strong>0.8</strong> and BM25 weighted <strong>0.2</strong> — so semantic search dominates and BM25 breaks ties and rescues exact-match cases:</p>
-<pre tabindex="0"><code>score(chunk) = 0.8 · 1/(semantic_rank + 1) + 0.2 · 1/(bm25_rank + 1)
-</code></pre><p><img alt="A standard RAG system that uses both embeddings and BM25 to retrieve information. In preprocessing, the corpus is chunked and fed to both an embedding model (into a vector database) and TF-IDF (into a BM25 index). At runtime, a query hits both indexes, results are combined with rank fusion, and the top-K chunks go to the generative model." loading="lazy" src="/posts/contextual_retrieval/standard-rag.jpg"></p>
-<hr>
-<h2 id="2-the-problem-with-standard-rag-chunks-lose-context">2. The Problem with Standard RAG: Chunks Lose Context<a hidden class="anchor" aria-hidden="true" href="#2-the-problem-with-standard-rag-chunks-lose-context">#</a></h2>
-<p>RAG normally splits a large document into many small <strong>chunks</strong>, then embeds each one:</p>
-<pre tabindex="0"><code>Embedding(chunk) = EmbeddingModel(chunk)
-</code></pre><p>The problem: <strong>once a chunk is cut out, it usually loses the context of the original document.</strong></p>
-<p>Suppose a chunk is just one sentence:</p>
-<pre tabindex="0"><code>The company&#39;s revenue grew by 3%.
-</code></pre><p>But it doesn&rsquo;t say:</p>
-<ul>
-<li>Which company?</li>
-<li>Which quarter?</li>
-<li>Which financial report?</li>
-<li>Compared to which previous quarter?</li>
-</ul>
-<p>As a result, the RAG retriever has a hard time judging whether this chunk is relevant to the user&rsquo;s question.</p>
-<hr>
-<h2 id="3-contextual-retrieval-give-every-chunk-its-context-back">3. Contextual Retrieval: Give Every Chunk Its Context Back<a hidden class="anchor" aria-hidden="true" href="#3-contextual-retrieval-give-every-chunk-its-context-back">#</a></h2>
-<p>Anthropic&rsquo;s method: at <strong>indexing</strong> time, use an LLM to read <strong>both</strong>:</p>
-<pre tabindex="0"><code>the whole document + the current chunk
-</code></pre><p>Then generate a short 50–100 token background blurb for that chunk, and <strong>prepend</strong> it to the original chunk:</p>
-<pre tabindex="0"><code>ContextualChunk(chunk) = LLM_Context(document, chunk) + chunk
-</code></pre><p>The prompt Anthropic uses is roughly:</p>
-<pre tabindex="0"><code>&lt;document&gt;
+<!doctype html><html lang=en dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Anthropic RAG Architecture: Contextual Retrieval | AI Engineering Journal: Joy, Thoughts and Practice</title><meta name=keywords content><meta name=description content="How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering."><meta name=author content><link rel=canonical href=https://tiejun-ai.github.io/posts/contextual_retrieval/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://tiejun-ai.github.io/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://tiejun-ai.github.io/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://tiejun-ai.github.io/favicon-32x32.png><link rel=apple-touch-icon href=https://tiejun-ai.github.io/apple-touch-icon.png><link rel=mask-icon href=https://tiejun-ai.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://tiejun-ai.github.io/posts/contextual_retrieval/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><meta property="og:url" content="https://tiejun-ai.github.io/posts/contextual_retrieval/"><meta property="og:site_name" content="AI Engineering Journal: Joy, Thoughts and Practice"><meta property="og:title" content="Anthropic RAG Architecture: Contextual Retrieval"><meta property="og:description" content="How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2026-07-01T00:00:00-07:00"><meta property="article:modified_time" content="2026-07-01T00:00:00-07:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Anthropic RAG Architecture: Contextual Retrieval"><meta name=twitter:description content="How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering."><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://tiejun-ai.github.io/posts/"},{"@type":"ListItem","position":2,"name":"Anthropic RAG Architecture: Contextual Retrieval","item":"https://tiejun-ai.github.io/posts/contextual_retrieval/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Anthropic RAG Architecture: Contextual Retrieval","name":"Anthropic RAG Architecture: Contextual Retrieval","description":"How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.","keywords":[],"articleBody":"How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.\nAnthropic Engineering Blog: Introducing Contextual Retrieval\nTL;DR Anthropic’s engineering blog describes their RAG architecture, built on three pieces:\nHybrid Retrieval + Contextual Retrieval + Reranker\nThe key idea is this:\nInstead of chopping a document into chunks and embedding each chunk directly, first prepend a short “context blurb” to every chunk — then index that.\nThat one change, plus hybrid search and reranking, cuts the retrieval failure rate dramatically.\n1. Hybrid Retrieval: Embedding + BM25 The standard RAG system uses embedding semantic search for retrieval. But embeddings alone are shaky, especially for:\nerror codes product model numbers people’s names proper nouns code symbols exact strings For example, a user asks:\nWhat does error code TS-999 mean? This query needs an exact match on TS-999. Here traditional BM25 / keyword search is often more reliable than embeddings.\nSo a stronger retrieval architecture usually combines both:\nHybrid Retrieval = Embedding Semantic Search + BM25 Text Search Embedding handles semantic understanding; BM25 handles exact matching. The two complement each other.\nRank fusion. Embedding search and BM25 each return their own ranked list. Rank fusion merges the two lists into one. Common techniques:\nReciprocal Rank Fusion (RRF) — the most popular choice. It ignores the raw scores and uses only each document’s rank in each list, summing 1 / (k + rank) across lists (with a constant like k = 60). Because it works on ranks, it needs no score normalization and is robust across very different scoring systems. See the original paper, Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods (Cormack et al., 2009). Weighted score fusion — normalize each list’s scores (e.g., min-max) to a common range, then take a weighted sum (α · embedding_score + (1 − α) · BM25_score). More tunable, but sensitive to how you normalize. Which one does Anthropic use? The blog just says “rank fusion techniques,” but their cookbook code reveals: rank-based scoring like RRF, but with per-source weights. Each chunk’s score is weight · 1 / (rank + 1) summed over the two lists, with the semantic list weighted 0.8 and BM25 weighted 0.2 — so semantic search dominates and BM25 breaks ties and rescues exact-match cases:\nscore(chunk) = 0.8 · 1/(semantic_rank + 1) + 0.2 · 1/(bm25_rank + 1) 2. The Problem with Standard RAG: Chunks Lose Context RAG normally splits a large document into many small chunks, then embeds each one:\nEmbedding(chunk) = EmbeddingModel(chunk) The problem: once a chunk is cut out, it usually loses the context of the original document.\nSuppose a chunk is just one sentence:\nThe company's revenue grew by 3%. But it doesn’t say:\nWhich company? Which quarter? Which financial report? Compared to which previous quarter? As a result, the RAG retriever has a hard time judging whether this chunk is relevant to the user’s question.\n3. Contextual Retrieval: Give Every Chunk Its Context Back Anthropic’s method: at indexing time, use an LLM to read both:\nthe whole document + the current chunk Then generate a short 50–100 token background blurb for that chunk, and prepend it to the original chunk:\nContextualChunk(chunk) = LLM_Context(document, chunk) + chunk The prompt Anthropic uses is roughly:\n{{WHOLE_DOCUMENT}} Here is the chunk we want to situate within the whole document {{CHUNK_CONTENT}} Please give a short succinct context to situate this chunk within the overall document for the purposes of improving search retrieval of the chunk. Answer only with the succinct context and nothing else. Example.\nOriginal chunk:\nThe company's revenue grew by 3%. LLM-generated chunk:\nThis chunk is from Meta's Q2 2023 earnings report; it describes the revenue change for that quarter relative to the previous quarter. The company's revenue grew by 3%. Now the chunk itself carries far more semantic anchors:\nMeta / 2023 Q2 / earnings / revenue / QoQ growth …which makes it much easier for the retrieval system to recall.\nHow this differs from other approaches Anthropic also experimented with other ways to add context to chunks, but none worked as well as Contextual Retrieval:\nAdding a generic document summary to each chunk → only marginal gains in their experiments. Hypothetical Document Embedding (HyDE) → generate a hypothetical relevant document, then embed it. Summary-based indexing → build the index from summaries — lower performance in their experiments. The key distinction:\nContextual Retrieval does not summarize the whole document, and does not generate a hypothetical document — it generates chunk-specific context for each chunk.\nIn other words, the LLM’s job here isn’t to answer a question — it’s to improve the chunk representation during offline indexing.\nPrompt Caching: what makes this affordable Running an LLM over every chunk sounds expensive — and naively it is. The context prompt includes the whole document each time (so the model can situate the chunk), and a long document may split into dozens or hundreds of chunks. Passing the full document once per chunk would mean re-reading the same document tokens over and over.\nPrompt caching removes that waste. Prompt caching optimizes your API usage by allowing resuming from specific prefixes in your prompts. This significantly reduces processing time and costs for repetitive tasks or prompts with consistent elements. As Anthropic puts it:\nWith prompt caching, you don’t need to pass in the reference document for every chunk. You simply load the document into the cache once and then reference the previously cached content.\nMechanically, you place the whole document at the front of the prompt and mark it as cacheable:\nPrompt = [ WHOLE_DOCUMENT (cached, written once) ] + [ this chunk + instruction (per call) ] The result is cheap enough to be practical. Using Claude 3 Haiku (a cheap and smaller model), Anthropic reports a one-time cost of $1.02 per million document tokens to generate the contextualized chunks.\n4. The Full RAG Pipeline and Architecture Offline indexing stage:\nRaw document → split into chunks → generate a contextual summary for each chunk → context + chunk → build embedding index → build BM25 index Online query stage:\nUser question → Embedding Search → BM25 Search → fuse results → Reranking → select top chunks → put into LLM context → generate answer Putting the two halves together — Contextual Retrieval at preprocessing and reranking at runtime — gives the full architecture:\n5. Reranking Also Matters Beyond Contextual Retrieval, Anthropic’s experiments also add reranking. The rough flow:\nRetrieve a batch of candidate chunks → re-order with a reranker → keep the most relevant top-K chunks → put into the LLM They used a Cohere reranker.\nThe value of reranking is a division of labor:\nFirst stage — retrieval is responsible for “don’t miss anything.” Second stage — reranker is responsible for “order it more precisely.” Why rerank? Two reasons:\nHigher answer quality — the model only sees the most accurate information, with less distraction. The reranker model is generally much more sophisticated and powerful than the embedding model and BM25 scoring used in retrieval. Lower cost and latency — fewer tokens fed into the LLM’s context window, which also means quicker answer generation. The three steps of reranking:\nBroad initial retrieval — quickly pull the most likely candidates from the index (e.g., top 150 chunks). Feed into the reranker — send those 150 chunks plus the user’s original question into a dedicated reranker model. Score and select — the reranker scores each chunk’s relevance and selects only the top-K to feed to the LLM. 6. Top-K Needs Tuning Too Anthropic found that putting top-20 chunks into the LLM context worked better than top-5 or top-10.\nThis matches real-world RAG experience:\ntop-K too small → easy to miss key information. top-K too large → introduces noise, raises cost and latency. optimal top-K must be found empirically, per task and dataset. In their setting, top-20 was the better choice.\n7. Final Results Anthropic’s experiments show the failure rate dropping at each step:\nBaseline failure rate: 5.7% Contextual Embeddings: 3.7% Contextual Embeddings + Contextual BM25: 2.9% + Reranking: 1.9% In other words:\nContextual Retrieval + Hybrid Search + Reranking significantly reduces the retrieval failure rate.\nStacking Reranked Contextual Embedding + Contextual BM25 cuts the top-20-chunk retrieval failure rate by 67%.\nMy Thoughts on Anthropic’s RAG Architecture Simple yet powerful LLM-driven indexing. Using an LLM to generate contextual chunk indexes is simple yet powerful.\nPrompt caching makes it affordable. Generating a context blurb per chunk with an LLM sounds expensive, but because the whole document sits in cache for every chunk, prompt caching keeps the cost low.\nHybrid Retrieval, Rank Fusion, and Reranking form the canonical components of a modern RAG-based AI application architecture.\nBig Picture\nAn important lesson learned here is to use LLMs to improve your data representation. As inference gets cheaper, more of the classic data pipeline becomes a place to spend LLM tokens for better downstream quality.\nAnthropic’s Contextual Retrieval pioneered an effective LLM-driven approach. In newer AI agent systems such as Claude Code, traditional RAG indexing is replaced by a simple grep over files. It remains an open question how to do RAG indexing and architect RAG applications better and more effectively. More research and development will continue to improve this important area of AI engineering.\nKey Takeaways Hybrid Retrieval = Embedding (semantic) + BM25 (exact match) — the two cover each other’s blind spots. The problem: chunks lose their document context, so embeddings can’t tell if they’re relevant. Contextual Retrieval: at indexing time, an LLM writes a 50–100 token, chunk-specific context blurb and prepends it to each chunk — for both the embedding and BM25 indexes. Reranking: a second stage that re-orders a broad candidate set (e.g., 150 → top-20) for precision, lower cost, and lower latency. Results: Contextual Retrieval + Hybrid Search + Reranking drops the failure rate from 5.7% to 1.9% — a 67% reduction. Core lesson: the power and magic of LLMs can help solve data-processing problems (e.g., RAG indexing) too. References Anthropic (2024). Introducing Contextual Retrieval. anthropic.com/news/contextual-retrieval Gao, L., Ma, X., Lin, J., \u0026 Callan, J. (2022). Precise Zero-Shot Dense Retrieval without Relevance Labels (HyDE). arxiv.org/abs/2212.10496 Cormack, G. V., Clarke, C. L. A., \u0026 Buettcher, S. (2009). Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods. SIGIR. cormack.uwaterloo.ca/cormacksigir09-rrf.pdf Anthropic Cookbook. Contextual Embeddings guide (hybrid search fusion implementation). github.com/anthropics/anthropic-cookbook Anthropic. Prompt caching (documentation). platform.claude.com/docs/en/build-with-claude/prompt-caching Enjoyed this article? ⭐ Star the repo on GitHub!\n","wordCount":"1774","inLanguage":"en","datePublished":"2026-07-01T00:00:00-07:00","dateModified":"2026-07-01T00:00:00-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://tiejun-ai.github.io/posts/contextual_retrieval/"},"publisher":{"@type":"Organization","name":"AI Engineering Journal: Joy, Thoughts and Practice","logo":{"@type":"ImageObject","url":"https://tiejun-ai.github.io/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://tiejun-ai.github.io/ accesskey=h title="AI Engineering Journal: Joy, Thoughts and Practice (Alt + H)">AI Engineering Journal: Joy, Thoughts and Practice</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">Anthropic RAG Architecture: Contextual Retrieval</h1><div class=post-meta><span title='2026-07-01 00:00:00 -0700 PDT'>July 1, 2026</span></div></header><div class="post-content md-content"><p><em>How Anthropic architected their RAG system — Hybrid Retrieval + Contextual Retrieval + Reranking — by using an LLM at indexing time to give every chunk back the context it lost when it was split. My explanations and thoughts on such a canonical RAG architecture, and the valuable lessons for AI Engineering.</em></p><blockquote><p>Anthropic Engineering Blog: <a href=https://www.anthropic.com/news/contextual-retrieval>Introducing Contextual Retrieval</a></p></blockquote><hr><h2 id=tldr>TL;DR<a hidden class=anchor aria-hidden=true href=#tldr>#</a></h2><p>Anthropic&rsquo;s engineering blog describes their RAG architecture, built on three pieces:</p><p><strong>Hybrid Retrieval + Contextual Retrieval + Reranker</strong></p><p>The key idea is this:</p><blockquote><p>Instead of chopping a document into chunks and embedding each chunk directly, first prepend a short &ldquo;context blurb&rdquo; to every chunk — then index that.</p></blockquote><p>That one change, plus hybrid search and reranking, cuts the retrieval failure rate dramatically.</p><hr><h2 id=1-hybrid-retrieval-embedding--bm25>1. Hybrid Retrieval: Embedding + BM25<a hidden class=anchor aria-hidden=true href=#1-hybrid-retrieval-embedding--bm25>#</a></h2><p>The standard RAG system uses <strong>embedding semantic search</strong> for retrieval. But embeddings alone are shaky, especially for:</p><ul><li>error codes</li><li>product model numbers</li><li>people&rsquo;s names</li><li>proper nouns</li><li>code symbols</li><li>exact strings</li></ul><p>For example, a user asks:</p><pre tabindex=0><code>What does error code TS-999 mean?
+</code></pre><p>This query needs an <em>exact</em> match on <code>TS-999</code>. Here traditional <strong>BM25 / keyword search</strong> is often more reliable than embeddings.</p><p>So a stronger retrieval architecture usually combines both:</p><pre tabindex=0><code>Hybrid Retrieval = Embedding Semantic Search + BM25 Text Search
+</code></pre><p>Embedding handles <strong>semantic understanding</strong>; BM25 handles <strong>exact matching</strong>. The two complement each other.</p><p><strong>Rank fusion.</strong> Embedding search and BM25 each return their own ranked list. <strong>Rank fusion</strong> merges the two lists into one. Common techniques:</p><ul><li><strong>Reciprocal Rank Fusion (RRF)</strong> — the most popular choice. It ignores the raw scores and uses only each document&rsquo;s <em>rank</em> in each list, summing <code>1 / (k + rank)</code> across lists (with a constant like <code>k = 60</code>). Because it works on ranks, it needs no score normalization and is robust across very different scoring systems. See the original paper, <a href=https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf>Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods</a> (Cormack et al., 2009).</li><li><strong>Weighted score fusion</strong> — normalize each list&rsquo;s scores (e.g., min-max) to a common range, then take a weighted sum (<code>α · embedding_score + (1 − α) · BM25_score</code>). More tunable, but sensitive to how you normalize.</li></ul><p><strong>Which one does Anthropic use?</strong> The blog just says &ldquo;rank fusion techniques,&rdquo; but their <a href=https://github.com/anthropics/anthropic-cookbook/blob/main/capabilities/contextual-embeddings/guide.ipynb>cookbook code</a> reveals: rank-based scoring like RRF, but with per-source <strong>weights</strong>. Each chunk&rsquo;s score is <code>weight · 1 / (rank + 1)</code> summed over the two lists, with the semantic list weighted <strong>0.8</strong> and BM25 weighted <strong>0.2</strong> — so semantic search dominates and BM25 breaks ties and rescues exact-match cases:</p><pre tabindex=0><code>score(chunk) = 0.8 · 1/(semantic_rank + 1) + 0.2 · 1/(bm25_rank + 1)
+</code></pre><p><img alt="A standard RAG system that uses both embeddings and BM25 to retrieve information. In preprocessing, the corpus is chunked and fed to both an embedding model (into a vector database) and TF-IDF (into a BM25 index). At runtime, a query hits both indexes, results are combined with rank fusion, and the top-K chunks go to the generative model." loading=lazy src=/posts/contextual_retrieval/standard-rag.jpg></p><hr><h2 id=2-the-problem-with-standard-rag-chunks-lose-context>2. The Problem with Standard RAG: Chunks Lose Context<a hidden class=anchor aria-hidden=true href=#2-the-problem-with-standard-rag-chunks-lose-context>#</a></h2><p>RAG normally splits a large document into many small <strong>chunks</strong>, then embeds each one:</p><pre tabindex=0><code>Embedding(chunk) = EmbeddingModel(chunk)
+</code></pre><p>The problem: <strong>once a chunk is cut out, it usually loses the context of the original document.</strong></p><p>Suppose a chunk is just one sentence:</p><pre tabindex=0><code>The company&#39;s revenue grew by 3%.
+</code></pre><p>But it doesn&rsquo;t say:</p><ul><li>Which company?</li><li>Which quarter?</li><li>Which financial report?</li><li>Compared to which previous quarter?</li></ul><p>As a result, the RAG retriever has a hard time judging whether this chunk is relevant to the user&rsquo;s question.</p><hr><h2 id=3-contextual-retrieval-give-every-chunk-its-context-back>3. Contextual Retrieval: Give Every Chunk Its Context Back<a hidden class=anchor aria-hidden=true href=#3-contextual-retrieval-give-every-chunk-its-context-back>#</a></h2><p>Anthropic&rsquo;s method: at <strong>indexing</strong> time, use an LLM to read <strong>both</strong>:</p><pre tabindex=0><code>the whole document + the current chunk
+</code></pre><p>Then generate a short 50–100 token background blurb for that chunk, and <strong>prepend</strong> it to the original chunk:</p><pre tabindex=0><code>ContextualChunk(chunk) = LLM_Context(document, chunk) + chunk
+</code></pre><p>The prompt Anthropic uses is roughly:</p><pre tabindex=0><code>&lt;document&gt;
 {{WHOLE_DOCUMENT}}
 &lt;/document&gt;
 
@@ -247,222 +19,35 @@ Here is the chunk we want to situate within the whole document
 Please give a short succinct context to situate this chunk within the overall
 document for the purposes of improving search retrieval of the chunk.
 Answer only with the succinct context and nothing else.
-</code></pre><p><strong>Example.</strong></p>
-<p>Original chunk:</p>
-<pre tabindex="0"><code>The company&#39;s revenue grew by 3%.
-</code></pre><p>LLM-generated chunk:</p>
-<pre tabindex="0"><code>This chunk is from Meta&#39;s Q2 2023 earnings report; it describes the revenue
+</code></pre><p><strong>Example.</strong></p><p>Original chunk:</p><pre tabindex=0><code>The company&#39;s revenue grew by 3%.
+</code></pre><p>LLM-generated chunk:</p><pre tabindex=0><code>This chunk is from Meta&#39;s Q2 2023 earnings report; it describes the revenue
 change for that quarter relative to the previous quarter.
 The company&#39;s revenue grew by 3%.
-</code></pre><p>Now the chunk itself carries far more semantic anchors:</p>
-<pre tabindex="0"><code>Meta / 2023 Q2 / earnings / revenue / QoQ growth
-</code></pre><p>…which makes it much easier for the retrieval system to recall.</p>
-<h3 id="how-this-differs-from-other-approaches">How this differs from other approaches<a hidden class="anchor" aria-hidden="true" href="#how-this-differs-from-other-approaches">#</a></h3>
-<p>Anthropic also experimented with other ways to add context to chunks, but none worked as well as Contextual Retrieval:</p>
-<ol>
-<li><strong>Adding a generic document summary to each chunk</strong> → only marginal gains in their experiments.</li>
-<li><strong><a href="https://arxiv.org/abs/2212.10496">Hypothetical Document Embedding (HyDE)</a></strong> → generate a hypothetical relevant document, then embed it.</li>
-<li><strong>Summary-based indexing</strong> → build the index from summaries — lower performance in their experiments.</li>
-</ol>
-<p>The key distinction:</p>
-<blockquote>
-<p>Contextual Retrieval does <strong>not</strong> summarize the whole document, and does <strong>not</strong> generate a hypothetical document — it generates <strong>chunk-specific context</strong> for each chunk.</p>
-</blockquote>
-<p>In other words, the LLM&rsquo;s job here isn&rsquo;t to answer a question — it&rsquo;s to improve the <strong>chunk representation</strong> during offline indexing.</p>
-<h3 id="prompt-caching-what-makes-this-affordable">Prompt Caching: what makes this affordable<a hidden class="anchor" aria-hidden="true" href="#prompt-caching-what-makes-this-affordable">#</a></h3>
-<p>Running an LLM over <em>every chunk</em> sounds expensive — and naively it is. The context prompt includes the <strong>whole document</strong> each time (so the model can situate the chunk), and a long document may split into dozens or hundreds of chunks. Passing the full document once per chunk would mean re-reading the same document tokens over and over.</p>
-<p><strong><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching">Prompt caching</a></strong> removes that waste. Prompt caching optimizes your API usage by allowing resuming from specific prefixes in your prompts. This significantly reduces processing time and costs for repetitive tasks or prompts with consistent elements. As Anthropic puts it:</p>
-<blockquote>
-<p>With prompt caching, you don&rsquo;t need to pass in the reference document for every chunk. You simply load the document into the cache once and then reference the previously cached content.</p>
-</blockquote>
-<p>Mechanically, you place the whole document at the front of the prompt and mark it as cacheable:</p>
-<pre tabindex="0"><code>Prompt = [ WHOLE_DOCUMENT (cached, written once) ] + [ this chunk + instruction (per call) ]
-</code></pre><p>The result is cheap enough to be practical. Using <strong>Claude 3 Haiku</strong> (a cheap and smaller model), Anthropic reports a <strong>one-time cost of $1.02 per million document tokens</strong> to generate the contextualized chunks.</p>
-<hr>
-<h2 id="4-the-full-rag-pipeline-and-architecture">4. The Full RAG Pipeline and Architecture<a hidden class="anchor" aria-hidden="true" href="#4-the-full-rag-pipeline-and-architecture">#</a></h2>
-<p><strong>Offline indexing stage:</strong></p>
-<pre tabindex="0"><code>Raw document
+</code></pre><p>Now the chunk itself carries far more semantic anchors:</p><pre tabindex=0><code>Meta / 2023 Q2 / earnings / revenue / QoQ growth
+</code></pre><p>…which makes it much easier for the retrieval system to recall.</p><h3 id=how-this-differs-from-other-approaches>How this differs from other approaches<a hidden class=anchor aria-hidden=true href=#how-this-differs-from-other-approaches>#</a></h3><p>Anthropic also experimented with other ways to add context to chunks, but none worked as well as Contextual Retrieval:</p><ol><li><strong>Adding a generic document summary to each chunk</strong> → only marginal gains in their experiments.</li><li><strong><a href=https://arxiv.org/abs/2212.10496>Hypothetical Document Embedding (HyDE)</a></strong> → generate a hypothetical relevant document, then embed it.</li><li><strong>Summary-based indexing</strong> → build the index from summaries — lower performance in their experiments.</li></ol><p>The key distinction:</p><blockquote><p>Contextual Retrieval does <strong>not</strong> summarize the whole document, and does <strong>not</strong> generate a hypothetical document — it generates <strong>chunk-specific context</strong> for each chunk.</p></blockquote><p>In other words, the LLM&rsquo;s job here isn&rsquo;t to answer a question — it&rsquo;s to improve the <strong>chunk representation</strong> during offline indexing.</p><h3 id=prompt-caching-what-makes-this-affordable>Prompt Caching: what makes this affordable<a hidden class=anchor aria-hidden=true href=#prompt-caching-what-makes-this-affordable>#</a></h3><p>Running an LLM over <em>every chunk</em> sounds expensive — and naively it is. The context prompt includes the <strong>whole document</strong> each time (so the model can situate the chunk), and a long document may split into dozens or hundreds of chunks. Passing the full document once per chunk would mean re-reading the same document tokens over and over.</p><p><strong><a href=https://platform.claude.com/docs/en/build-with-claude/prompt-caching>Prompt caching</a></strong> removes that waste. Prompt caching optimizes your API usage by allowing resuming from specific prefixes in your prompts. This significantly reduces processing time and costs for repetitive tasks or prompts with consistent elements. As Anthropic puts it:</p><blockquote><p>With prompt caching, you don&rsquo;t need to pass in the reference document for every chunk. You simply load the document into the cache once and then reference the previously cached content.</p></blockquote><p>Mechanically, you place the whole document at the front of the prompt and mark it as cacheable:</p><pre tabindex=0><code>Prompt = [ WHOLE_DOCUMENT (cached, written once) ] + [ this chunk + instruction (per call) ]
+</code></pre><p>The result is cheap enough to be practical. Using <strong>Claude 3 Haiku</strong> (a cheap and smaller model), Anthropic reports a <strong>one-time cost of $1.02 per million document tokens</strong> to generate the contextualized chunks.</p><hr><h2 id=4-the-full-rag-pipeline-and-architecture>4. The Full RAG Pipeline and Architecture<a hidden class=anchor aria-hidden=true href=#4-the-full-rag-pipeline-and-architecture>#</a></h2><p><strong>Offline indexing stage:</strong></p><pre tabindex=0><code>Raw document
   → split into chunks
   → generate a contextual summary for each chunk
   → context + chunk
   → build embedding index
   → build BM25 index
-</code></pre><p><img alt="Contextual Retrieval preprocessing: the corpus is split into Chunk 1…X, and a prompt is run for every chunk to situate it within the document. Claude responds with 50–100 tokens of context that is prepended to the corresponding chunk, producing &ldquo;Context + Chunk&rdquo; units. Those are fed to both an embedding model (into a vector database) and TF-IDF (into a BM25 index)." loading="lazy" src="/posts/contextual_retrieval/contextual-retrieval-preprocessing.png"></p>
-<p><strong>Online query stage:</strong></p>
-<pre tabindex="0"><code>User question
+</code></pre><p><img alt="Contextual Retrieval preprocessing: the corpus is split into Chunk 1…X, and a prompt is run for every chunk to situate it within the document. Claude responds with 50–100 tokens of context that is prepended to the corresponding chunk, producing &ldquo;Context + Chunk&rdquo; units. Those are fed to both an embedding model (into a vector database) and TF-IDF (into a BM25 index)." loading=lazy src=/posts/contextual_retrieval/contextual-retrieval-preprocessing.png></p><p><strong>Online query stage:</strong></p><pre tabindex=0><code>User question
   → Embedding Search
   → BM25 Search
   → fuse results
   → Reranking
   → select top chunks
   → put into LLM context → generate answer
-</code></pre><p>Putting the two halves together — Contextual Retrieval at preprocessing and reranking at runtime — gives the full architecture:</p>
-<p><img alt="The combined architecture. Preprocessing (with Contextual Retrieval): the corpus is chunked, each chunk is situated within its document, and the resulting Context + Chunk units feed both the vector database and the TF-IDF/BM25 index. Runtime (with Reranking): a query hits both indexes, rank fusion produces the top-N chunks, a reranker narrows them to the top-K chunks, and the generative model produces the response." loading="lazy" src="/posts/contextual_retrieval/contextual-retrieval-reranking.png"></p>
-<hr>
-<h2 id="5-reranking-also-matters">5. Reranking Also Matters<a hidden class="anchor" aria-hidden="true" href="#5-reranking-also-matters">#</a></h2>
-<p>Beyond Contextual Retrieval, Anthropic&rsquo;s experiments also add <strong>reranking</strong>. The rough flow:</p>
-<pre tabindex="0"><code>Retrieve a batch of candidate chunks
+</code></pre><p>Putting the two halves together — Contextual Retrieval at preprocessing and reranking at runtime — gives the full architecture:</p><p><img alt="The combined architecture. Preprocessing (with Contextual Retrieval): the corpus is chunked, each chunk is situated within its document, and the resulting Context + Chunk units feed both the vector database and the TF-IDF/BM25 index. Runtime (with Reranking): a query hits both indexes, rank fusion produces the top-N chunks, a reranker narrows them to the top-K chunks, and the generative model produces the response." loading=lazy src=/posts/contextual_retrieval/contextual-retrieval-reranking.png></p><hr><h2 id=5-reranking-also-matters>5. Reranking Also Matters<a hidden class=anchor aria-hidden=true href=#5-reranking-also-matters>#</a></h2><p>Beyond Contextual Retrieval, Anthropic&rsquo;s experiments also add <strong>reranking</strong>. The rough flow:</p><pre tabindex=0><code>Retrieve a batch of candidate chunks
   → re-order with a reranker
   → keep the most relevant top-K chunks
   → put into the LLM
-</code></pre><p>They used a <strong><a href="https://cohere.com/rerank">Cohere reranker</a></strong>.</p>
-<p>The value of reranking is a division of labor:</p>
-<ul>
-<li><strong>First stage — retrieval</strong> is responsible for <em>&ldquo;don&rsquo;t miss anything.&rdquo;</em></li>
-<li><strong>Second stage — reranker</strong> is responsible for <em>&ldquo;order it more precisely.&rdquo;</em></li>
-</ul>
-<p><strong>Why rerank? Two reasons:</strong></p>
-<ol>
-<li><strong>Higher answer quality</strong> — the model only sees the most accurate information, with less distraction. The reranker model is generally much more sophisticated and powerful than the embedding model and BM25 scoring used in retrieval.</li>
-<li><strong>Lower cost and latency</strong> — fewer tokens fed into the LLM&rsquo;s context window, which also means quicker answer generation.</li>
-</ol>
-<p><strong>The three steps of reranking:</strong></p>
-<ol>
-<li><strong>Broad initial retrieval</strong> — quickly pull the most likely candidates from the index (e.g., top <strong>150</strong> chunks).</li>
-<li><strong>Feed into the reranker</strong> — send those 150 chunks plus the user&rsquo;s original question into a dedicated reranker model.</li>
-<li><strong>Score and select</strong> — the reranker scores each chunk&rsquo;s relevance and selects only the top-K to feed to the LLM.</li>
-</ol>
-<hr>
-<h2 id="6-top-k-needs-tuning-too">6. Top-K Needs Tuning Too<a hidden class="anchor" aria-hidden="true" href="#6-top-k-needs-tuning-too">#</a></h2>
-<p>Anthropic found that putting <strong>top-20 chunks</strong> into the LLM context worked better than top-5 or top-10.</p>
-<p>This matches real-world RAG experience:</p>
-<ul>
-<li><strong>top-K too small</strong> → easy to miss key information.</li>
-<li><strong>top-K too large</strong> → introduces noise, raises cost and latency.</li>
-<li><strong>optimal top-K</strong> must be found empirically, per task and dataset.</li>
-</ul>
-<p>In their setting, <strong>top-20</strong> was the better choice.</p>
-<hr>
-<h2 id="7-final-results">7. Final Results<a hidden class="anchor" aria-hidden="true" href="#7-final-results">#</a></h2>
-<p>Anthropic&rsquo;s experiments show the failure rate dropping at each step:</p>
-<pre tabindex="0"><code>Baseline failure rate:                          5.7%
+</code></pre><p>They used a <strong><a href=https://cohere.com/rerank>Cohere reranker</a></strong>.</p><p>The value of reranking is a division of labor:</p><ul><li><strong>First stage — retrieval</strong> is responsible for <em>&ldquo;don&rsquo;t miss anything.&rdquo;</em></li><li><strong>Second stage — reranker</strong> is responsible for <em>&ldquo;order it more precisely.&rdquo;</em></li></ul><p><strong>Why rerank? Two reasons:</strong></p><ol><li><strong>Higher answer quality</strong> — the model only sees the most accurate information, with less distraction. The reranker model is generally much more sophisticated and powerful than the embedding model and BM25 scoring used in retrieval.</li><li><strong>Lower cost and latency</strong> — fewer tokens fed into the LLM&rsquo;s context window, which also means quicker answer generation.</li></ol><p><strong>The three steps of reranking:</strong></p><ol><li><strong>Broad initial retrieval</strong> — quickly pull the most likely candidates from the index (e.g., top <strong>150</strong> chunks).</li><li><strong>Feed into the reranker</strong> — send those 150 chunks plus the user&rsquo;s original question into a dedicated reranker model.</li><li><strong>Score and select</strong> — the reranker scores each chunk&rsquo;s relevance and selects only the top-K to feed to the LLM.</li></ol><hr><h2 id=6-top-k-needs-tuning-too>6. Top-K Needs Tuning Too<a hidden class=anchor aria-hidden=true href=#6-top-k-needs-tuning-too>#</a></h2><p>Anthropic found that putting <strong>top-20 chunks</strong> into the LLM context worked better than top-5 or top-10.</p><p>This matches real-world RAG experience:</p><ul><li><strong>top-K too small</strong> → easy to miss key information.</li><li><strong>top-K too large</strong> → introduces noise, raises cost and latency.</li><li><strong>optimal top-K</strong> must be found empirically, per task and dataset.</li></ul><p>In their setting, <strong>top-20</strong> was the better choice.</p><hr><h2 id=7-final-results>7. Final Results<a hidden class=anchor aria-hidden=true href=#7-final-results>#</a></h2><p>Anthropic&rsquo;s experiments show the failure rate dropping at each step:</p><pre tabindex=0><code>Baseline failure rate:                          5.7%
 Contextual Embeddings:                          3.7%
 Contextual Embeddings + Contextual BM25:        2.9%
 + Reranking:                                    1.9%
-</code></pre><p>In other words:</p>
-<blockquote>
-<p><strong>Contextual Retrieval + Hybrid Search + Reranking</strong> significantly reduces the retrieval failure rate.</p>
-</blockquote>
-<p><img alt="Failed retrievals @20 across configurations. Standard Retrieval: Embedding 5.7%, Embedding + BM25 5.0%, Reranked embedding + BM25 3.5%. Contextual Retrieval: Contextual embedding 3.7%, Contextual embedding + contextual BM25 2.9%, Reranked contextual embedding + contextual BM25 1.9%. Reranked Contextual Embedding and Contextual BM25 reduces the top-20-chunk retrieval failure rate by 67%." loading="lazy" src="/posts/contextual_retrieval/results.jpg"></p>
-<p>Stacking Reranked Contextual Embedding + Contextual BM25 cuts the top-20-chunk retrieval failure rate by <strong>67%</strong>.</p>
-<hr>
-<h2 id="my-thoughts-on-anthropics-rag-architecture">My Thoughts on Anthropic&rsquo;s RAG Architecture<a hidden class="anchor" aria-hidden="true" href="#my-thoughts-on-anthropics-rag-architecture">#</a></h2>
-<p><strong>Simple yet powerful LLM-driven indexing.</strong> Using an LLM to generate contextual chunk indexes is simple yet powerful.</p>
-<p><strong>Prompt caching makes it affordable.</strong> Generating a context blurb per chunk with an LLM sounds expensive, but because the whole document sits in cache for every chunk, prompt caching keeps the cost low.</p>
-<p><strong>Hybrid Retrieval, Rank Fusion, and Reranking</strong> form the canonical components of a modern RAG-based AI application architecture.</p>
-<p><strong>Big Picture</strong></p>
-<p>An important lesson learned here is to <strong>use LLMs to improve your data representation.</strong> As inference gets cheaper, more of the classic data pipeline becomes a place to spend LLM tokens for better downstream quality.</p>
-<p>Anthropic&rsquo;s Contextual Retrieval pioneered an effective LLM-driven approach. In newer AI agent systems such as Claude Code, traditional RAG indexing is replaced by a simple <code>grep</code> over files. It remains an open question how to do RAG indexing and architect RAG applications better and more effectively. More research and development will continue to improve this important area of AI engineering.</p>
-<hr>
-<h2 id="key-takeaways">Key Takeaways<a hidden class="anchor" aria-hidden="true" href="#key-takeaways">#</a></h2>
-<ul>
-<li><strong>Hybrid Retrieval</strong> = Embedding (semantic) + BM25 (exact match) — the two cover each other&rsquo;s blind spots.</li>
-<li><strong>The problem:</strong> chunks lose their document context, so embeddings can&rsquo;t tell if they&rsquo;re relevant.</li>
-<li><strong>Contextual Retrieval:</strong> at indexing time, an LLM writes a 50–100 token, chunk-specific context blurb and prepends it to each chunk — for <em>both</em> the embedding and BM25 indexes.</li>
-<li><strong>Reranking:</strong> a second stage that re-orders a broad candidate set (e.g., 150 → top-20) for precision, lower cost, and lower latency.</li>
-<li><strong>Results:</strong> Contextual Retrieval + Hybrid Search + Reranking drops the failure rate from 5.7% to 1.9% — a <strong>67%</strong> reduction.</li>
-<li><strong>Core lesson:</strong> the power and magic of LLMs can help solve data-processing problems (e.g., RAG indexing) too.</li>
-</ul>
-<hr>
-<h3 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h3>
-<ul>
-<li>Anthropic (2024). <em>Introducing Contextual Retrieval.</em> <a href="https://www.anthropic.com/news/contextual-retrieval">anthropic.com/news/contextual-retrieval</a></li>
-<li>Gao, L., Ma, X., Lin, J., &amp; Callan, J. (2022). <em>Precise Zero-Shot Dense Retrieval without Relevance Labels</em> (HyDE). <a href="https://arxiv.org/abs/2212.10496">arxiv.org/abs/2212.10496</a></li>
-<li>Cormack, G. V., Clarke, C. L. A., &amp; Buettcher, S. (2009). <em>Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods.</em> SIGIR. <a href="https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf">cormack.uwaterloo.ca/cormacksigir09-rrf.pdf</a></li>
-<li>Anthropic Cookbook. <em>Contextual Embeddings guide</em> (hybrid search fusion implementation). <a href="https://github.com/anthropics/anthropic-cookbook/blob/main/capabilities/contextual-embeddings/guide.ipynb">github.com/anthropics/anthropic-cookbook</a></li>
-<li>Anthropic. <em>Prompt caching</em> (documentation). <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-caching">platform.claude.com/docs/en/build-with-claude/prompt-caching</a></li>
-</ul>
-<hr>
-<p>Enjoyed this article? ⭐ Star the <a href="https://github.com/tiejun-ai/tiejun-ai.github.io">repo</a> on GitHub!</p>
-
-
-  </div>
-
-  <footer class="post-footer">
-    <ul class="post-tags">
-    </ul>
-  </footer>
-</article>
-    </main>
-    
-<footer class="footer">
-        <span>&copy; 2026 <a href="https://tiejun-ai.github.io/">AI Engineering Journal: Joy, Thoughts and Practice</a></span> · 
-
-    
-    
-    <span>
-        Powered by
-        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
-        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
-    </span>
-</footer>
-<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
-        <polyline points="17 11 12 6 7 11"></polyline>
-        <polyline points="17 18 12 13 7 18"></polyline>
-    </svg>
-</a>
-
-<script>
-    let menu = document.getElementById('menu');
-    if (menu) {
-        
-        const scrollPosition = localStorage.getItem("menu-scroll-position");
-        if (scrollPosition) {
-            menu.scrollLeft = parseInt(scrollPosition, 10);
-        }
-        
-        menu.onscroll = function () {
-            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
-        }
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            var id = this.getAttribute("href").substr(1);
-            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
-                    behavior: "smooth"
-                });
-            } else {
-                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
-            }
-            if (id === "top") {
-                history.replaceState(null, null, " ");
-            } else {
-                history.pushState(null, null, `#${id}`);
-            }
-        });
-    });
-
-</script>
-<script>
-    var toplink = document.getElementById("top-link");
-    window.onscroll = function () {
-        const scrollThreshold = window.innerHeight;
-        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
-            toplink.classList.remove("hidden");
-        } else {
-            toplink.classList.add("hidden");
-        }
-    };
-
-</script>
-<script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const html = document.querySelector("html");
-        if (html.dataset.theme === "dark") {
-            html.dataset.theme = 'light';
-            localStorage.setItem("pref-theme", 'light');
-        } else {
-            html.dataset.theme = 'dark';
-            localStorage.setItem("pref-theme", 'dark');
-        }
-    })
-
-</script>
-</body>
-
-</html>
+</code></pre><p>In other words:</p><blockquote><p><strong>Contextual Retrieval + Hybrid Search + Reranking</strong> significantly reduces the retrieval failure rate.</p></blockquote><p><img alt="Failed retrievals @20 across configurations. Standard Retrieval: Embedding 5.7%, Embedding + BM25 5.0%, Reranked embedding + BM25 3.5%. Contextual Retrieval: Contextual embedding 3.7%, Contextual embedding + contextual BM25 2.9%, Reranked contextual embedding + contextual BM25 1.9%. Reranked Contextual Embedding and Contextual BM25 reduces the top-20-chunk retrieval failure rate by 67%." loading=lazy src=/posts/contextual_retrieval/results.jpg></p><p>Stacking Reranked Contextual Embedding + Contextual BM25 cuts the top-20-chunk retrieval failure rate by <strong>67%</strong>.</p><hr><h2 id=my-thoughts-on-anthropics-rag-architecture>My Thoughts on Anthropic&rsquo;s RAG Architecture<a hidden class=anchor aria-hidden=true href=#my-thoughts-on-anthropics-rag-architecture>#</a></h2><p><strong>Simple yet powerful LLM-driven indexing.</strong> Using an LLM to generate contextual chunk indexes is simple yet powerful.</p><p><strong>Prompt caching makes it affordable.</strong> Generating a context blurb per chunk with an LLM sounds expensive, but because the whole document sits in cache for every chunk, prompt caching keeps the cost low.</p><p><strong>Hybrid Retrieval, Rank Fusion, and Reranking</strong> form the canonical components of a modern RAG-based AI application architecture.</p><p><strong>Big Picture</strong></p><p>An important lesson learned here is to <strong>use LLMs to improve your data representation.</strong> As inference gets cheaper, more of the classic data pipeline becomes a place to spend LLM tokens for better downstream quality.</p><p>Anthropic&rsquo;s Contextual Retrieval pioneered an effective LLM-driven approach. In newer AI agent systems such as Claude Code, traditional RAG indexing is replaced by a simple <code>grep</code> over files. It remains an open question how to do RAG indexing and architect RAG applications better and more effectively. More research and development will continue to improve this important area of AI engineering.</p><hr><h2 id=key-takeaways>Key Takeaways<a hidden class=anchor aria-hidden=true href=#key-takeaways>#</a></h2><ul><li><strong>Hybrid Retrieval</strong> = Embedding (semantic) + BM25 (exact match) — the two cover each other&rsquo;s blind spots.</li><li><strong>The problem:</strong> chunks lose their document context, so embeddings can&rsquo;t tell if they&rsquo;re relevant.</li><li><strong>Contextual Retrieval:</strong> at indexing time, an LLM writes a 50–100 token, chunk-specific context blurb and prepends it to each chunk — for <em>both</em> the embedding and BM25 indexes.</li><li><strong>Reranking:</strong> a second stage that re-orders a broad candidate set (e.g., 150 → top-20) for precision, lower cost, and lower latency.</li><li><strong>Results:</strong> Contextual Retrieval + Hybrid Search + Reranking drops the failure rate from 5.7% to 1.9% — a <strong>67%</strong> reduction.</li><li><strong>Core lesson:</strong> the power and magic of LLMs can help solve data-processing problems (e.g., RAG indexing) too.</li></ul><hr><h3 id=references>References<a hidden class=anchor aria-hidden=true href=#references>#</a></h3><ul><li>Anthropic (2024). <em>Introducing Contextual Retrieval.</em> <a href=https://www.anthropic.com/news/contextual-retrieval>anthropic.com/news/contextual-retrieval</a></li><li>Gao, L., Ma, X., Lin, J., & Callan, J. (2022). <em>Precise Zero-Shot Dense Retrieval without Relevance Labels</em> (HyDE). <a href=https://arxiv.org/abs/2212.10496>arxiv.org/abs/2212.10496</a></li><li>Cormack, G. V., Clarke, C. L. A., & Buettcher, S. (2009). <em>Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods.</em> SIGIR. <a href=https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf>cormack.uwaterloo.ca/cormacksigir09-rrf.pdf</a></li><li>Anthropic Cookbook. <em>Contextual Embeddings guide</em> (hybrid search fusion implementation). <a href=https://github.com/anthropics/anthropic-cookbook/blob/main/capabilities/contextual-embeddings/guide.ipynb>github.com/anthropics/anthropic-cookbook</a></li><li>Anthropic. <em>Prompt caching</em> (documentation). <a href=https://platform.claude.com/docs/en/build-with-claude/prompt-caching>platform.claude.com/docs/en/build-with-claude/prompt-caching</a></li></ul><hr><p>Enjoyed this article? ⭐ Star the <a href=https://github.com/tiejun-ai/tiejun-ai.github.io>repo</a> on GitHub!</p></div><footer class=post-footer><ul class=post-tags></ul></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://tiejun-ai.github.io/>AI Engineering Journal: Joy, Thoughts and Practice</a></span> ·
+<span>Powered by
+<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script></body></html>
