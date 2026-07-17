@@ -1,7 +1,208 @@
-<!doctype html><html lang=en dir=auto data-theme=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application | AI Engineering Journal: Joy, Thoughts and Practice</title><meta name=keywords content><meta name=description content="Anthropic&rsquo;s Deep Research is a pioneering AI application built on a multi-agent architecture. There are many valuable AI engineering lessons we can learn from their experience building such a system."><meta name=author content><link rel=canonical href=https://tiejun-ai.github.io/posts/multi_agent_research/><link crossorigin=anonymous href=/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as=style><link rel=icon href=https://tiejun-ai.github.io/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://tiejun-ai.github.io/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://tiejun-ai.github.io/favicon-32x32.png><link rel=apple-touch-icon href=https://tiejun-ai.github.io/apple-touch-icon.png><link rel=mask-icon href=https://tiejun-ai.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://tiejun-ai.github.io/posts/multi_agent_research/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51);color-scheme:dark}.list{background:var(--theme)}.toc{background:var(--entry)}}</style></noscript><script>localStorage.getItem("pref-theme")==="dark"?document.querySelector("html").dataset.theme="dark":localStorage.getItem("pref-theme")==="light"?document.querySelector("html").dataset.theme="light":window.matchMedia("(prefers-color-scheme: dark)").matches?document.querySelector("html").dataset.theme="dark":document.querySelector("html").dataset.theme="light"</script><meta property="og:url" content="https://tiejun-ai.github.io/posts/multi_agent_research/"><meta property="og:site_name" content="AI Engineering Journal: Joy, Thoughts and Practice"><meta property="og:title" content="Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application"><meta property="og:description" content="Anthropic’s Deep Research is a pioneering AI application built on a multi-agent architecture. There are many valuable AI engineering lessons we can learn from their experience building such a system."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2026-06-26T00:00:00-07:00"><meta property="article:modified_time" content="2026-06-26T00:00:00-07:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application"><meta name=twitter:description content="Anthropic’s Deep Research is a pioneering AI application built on a multi-agent architecture. There are many valuable AI engineering lessons we can learn from their experience building such a system."><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://tiejun-ai.github.io/posts/"},{"@type":"ListItem","position":2,"name":"Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application","item":"https://tiejun-ai.github.io/posts/multi_agent_research/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application","name":"Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application","description":"Anthropic\u0026rsquo;s Deep Research is a pioneering AI application built on a multi-agent architecture. There are many valuable AI engineering lessons we can learn from their experience building such a system.","keywords":[],"articleBody":"Anthropic published an excellent engineering blog on how they built their Deep Research feature on a multi-agent architecture. It’s a canonical multi-agent system, full of valuable innovations and hard-won practical lessons that are well worth studying as an AI engineer.\nOriginal: How we built our multi-agent research system\n1. Why Multi-Agent? Anthropic’s definition of Deep Research: open-ended problems where you can’t predict the steps in advance. You can’t hardcode a fixed path for exploring a complex topic, because the process itself is dynamic and path-dependent — as the investigation unfolds, the agent needs to pivot, chase down subtopics, or search for new information — just like a human doing deep research.\nThus a multi-agent architecture is a good fit for Deep Research:\nParallel exploration — multiple subagents run at the same time, each with its own independent context window, exploring different facets of the problem. Separation of concerns — each subagent has its own tools, prompt, and exploration trajectory. This reduces path dependence and lets each line of investigation go deeper and stay more independent. Breaking the single-context ceiling — research often needs to process more information than a single agent’s context window can hold; spreading it across multiple agents fits far more in total context. How well does it work? A multi-agent system using Claude Opus 4 model as the lead agent and Claude Sonnet 4 model as subagents outperformed a single-agent system (using Opus 4) by 90.2% on Anthropic’s internal research eval.\nA classic example: find every board member of every IT company in the S\u0026P 500. This kind of breadth-first task — fanning out many searches at once — fails for a single agent searching sequentially, but multiple subagents dividing the work in parallel can handle it.\n2. Architecture: The Orchestrator-Worker Pattern The core is an orchestrator-worker pattern:\nLead Agent — analyzes the problem, forms a strategy, writes its plan to external memory (so a context overflow doesn’t wipe out the strategy), then spawns several subagents. Subagents — each gets a specific task, searches independently, uses interleaved thinking to evaluate results, and returns only its filtered findings to the lead. A subagent acts like an “intelligent filter.” CitationAgent — at the very end, dedicated to attributing each conclusion back to its sources. Here’s the overall structure — one Lead Agent coordinating at the top, several Subagents working in parallel below:\nSource: Anthropic — How we built our multi-agent research system\nViewed as a timeline, the flow looks like this — note that after aggregating, the Lead Agent can loop back for more research, forming a cycle:\n① user query │ ▼ ② Lead Agent reasons + plans ──► writes plan to memory │ ▼ ③ spawn 3–5 subagents in parallel ◄──────────────┐ │ │ ▼ │ needs ④ each subagent fires 3+ tool calls in parallel │ more │ │ research ▼ │ ⑤ Lead Agent aggregates findings ─────────────────┘ │ enough? ▼ ⑥ CitationAgent attributes sources │ ▼ ⑦ return final answer with citations The key is parallelism: the Lead Agent spawns 3–5 subagents at once, and each subagent fires multiple tool calls in parallel. For complex problems, this can cut research time by up to 90%.\n3. The Cost of Parallelism: Token Economics There’s no free lunch. Multi-agents are powerful and parallelism is fast, but they burn tokens:\nregular chat ▏ 1× (baseline) single agent ▏▏▏▏ ~4× multi-agent system ▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏ ~15× Hence an important principle: multi-agent is only worth it when the task’s value is high enough to cover this cost.\nWhy does multi-agent win? Anthropic offers an interesting and important conclusion:\nMulti-agent systems work mainly because they help spend enough tokens to solve the problem.\nOn the BrowseComp eval, three factors together — token usage, number of tool calls, and model choice — explained 95% of the performance variance, and token usage alone explained 80%. In other words, “feeding” a task enough tokens to explore is itself the main source of performance — and multi-agent is precisely a way to scale token usage beyond what a single agent’s context can hold.\n4. Prompt Engineering: The Primary Lever to Harness Agents Every agent uses an LLM driven by a prompt, so as Anthropic puts it: “prompt engineering was our primary lever for improving these behaviors.” Anthropic distilled 8 principles:\nThink like your agents. Step through the agent’s behavior to see its failure modes (spawning too many subagents, verbose queries, picking the wrong tool). Teach the orchestrator how to delegate. Each delegated task must spell out the objective, output format, which tools to use, and where the boundaries are. Scale effort to query complexity. Put the rules in the prompt: simple fact research = 1 agent / 3–10 calls; comparison research = 2–4 subagents; complex research = 10+ subagents with clear divisions. Tool design and selection are critical. Treat tool interfaces as UX. An agent that picks the wrong tool almost always fails; each tool needs a clear, non-overlapping description. Let agents improve themselves. Claude 4 can diagnose its own failures and improve prompts. A “tool-testing agent” that rewrote tool descriptions cut later agents’ task completion time by 40%. Start wide, then narrow down. Begin with short, broad queries to see what’s out there, then progressively focus — mirroring how human experts research. Guide the thinking process. Use extended thinking as a “controllable scratchpad.” The Lead Agent uses it to plan; subagents use interleaved thinking after each tool call to assess quality, find gaps, and refine the next step. Parallel tool calling transforms speed. The Lead Agent spawns subagents in parallel, and subagents call tools in parallel, compressing complex research time by up to 90%. 5. Evaluation Start small. About 20 real-scenario queries is enough; early iterations with help of the eval have outsized impact (success rates can jump from 30% to 80%). LLM-as-judge. Use a single prompt to score 0.0–1.0 across multiple dimensions: factual accuracy, citation accuracy, completeness, source quality, and tool efficiency. Human evaluation is indispensable. People catch problems the LLM judge misses — like agents favoring SEO content farms over authoritative academic PDFs. 6. Production Challenges Putting agents into production surfaces problems ordinary software doesn’t have:\nState and error accumulation. Agents run for a long time while holding state, so a small error compounds. Fix: durable execution, checkpoint-and-resume, and letting agents handle tool failures gracefully. Non-deterministic debugging. The same prompt can produce different decisions each run. Fix: full production tracing and monitoring of decision patterns. Deployment coordination. Agents may be mid-run when you update. Fix: rainbow deployments — old and new versions live at once, gradually shifting traffic. Key Takeaways Why: Deep Research tasks are unpredictable, the information exceeds a single agent’s context, and the work is parallelizable → multi-agent. Architecture: orchestrator-worker — Lead Agent delegates + subagents run in parallel + CitationAgent attributes sources. Results: multi-agent systems score 90.2% higher than a single agent; up to 90% faster; but ~15× the tokens of a chat; token usage alone explains 80% of the performance variance (three factors together, 95%). Core conclusion: multi-agent works mainly because it can “spend enough tokens to solve the problem.” Prompt: prompt engineering is the primary lever — delegate specifically, scale effort to complexity, treat tool design as UX, start wide then narrow, let agents improve themselves, and exploit parallelism. In one line: multi-agent suits high-value, parallelizable tasks whose information exceeds a single context — but it relies on careful prompt engineering, good tool design, solid evaluation, and a production system that can survive long-running execution.\nIf you want to see this architecture in code, I built an open-source implementation of this exact pattern in a companion post.\nReferences Anthropic (2025). How we built our multi-agent research system. anthropic.com/engineering/multi-agent-research-system My open-source build of this architecture: tiejun-ai.github.io/posts/deep_research Enjoyed this article? ⭐ Star the repo on GitHub!\n","wordCount":"1294","inLanguage":"en","datePublished":"2026-06-26T00:00:00-07:00","dateModified":"2026-06-26T00:00:00-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://tiejun-ai.github.io/posts/multi_agent_research/"},"publisher":{"@type":"Organization","name":"AI Engineering Journal: Joy, Thoughts and Practice","logo":{"@type":"ImageObject","url":"https://tiejun-ai.github.io/favicon.ico"}}}</script></head><body id=top><header class=header><nav class=header-nav><div class=logo><a href=https://tiejun-ai.github.io/ accesskey=h title="AI Engineering Journal: Joy, Thoughts and Practice (Alt + H)">AI Engineering Journal: Joy, Thoughts and Practice</a><div class=logo-switches><button id=theme-toggle class=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
-<svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-<svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu class=menu></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class="post-title entry-hint-parent">Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application</h1><div class=post-meta><span title='2026-06-26 00:00:00 -0700 PDT'>June 26, 2026</span></div></header><div class="post-content md-content"><p>Anthropic published an excellent engineering blog on how they built their <strong>Deep Research</strong> feature on a <strong>multi-agent</strong> architecture. It&rsquo;s a canonical multi-agent system, full of valuable innovations and hard-won practical lessons that are well worth studying as an AI engineer.</p><blockquote><p>Original: <a href=https://www.anthropic.com/engineering/multi-agent-research-system>How we built our multi-agent research system</a></p></blockquote><hr><h2 id=1-why-multi-agent>1. Why Multi-Agent?<a hidden class=anchor aria-hidden=true href=#1-why-multi-agent>#</a></h2><p>Anthropic&rsquo;s definition of Deep Research: <strong>open-ended problems where you can&rsquo;t predict the steps in advance.</strong> You can&rsquo;t hardcode a fixed path for exploring a complex topic, because the process itself is dynamic and <strong>path-dependent</strong> — as the investigation unfolds, the agent needs to pivot, chase down subtopics, or search for new information — just like a human doing deep research.</p><p>Thus a multi-agent architecture is a good fit for Deep Research:</p><ol><li><strong>Parallel exploration</strong> — multiple subagents run at the same time, each with its own <strong>independent context window</strong>, exploring different facets of the problem.</li><li><strong>Separation of concerns</strong> — each subagent has its own tools, prompt, and exploration trajectory. This reduces path dependence and lets each line of investigation go deeper and stay more independent.</li><li><strong>Breaking the single-context ceiling</strong> — research often needs to process more information than a single agent&rsquo;s context window can hold; spreading it across multiple agents fits far more in total context.</li></ol><p>How well does it work? A multi-agent system using <strong>Claude Opus 4 model as the lead agent</strong> and <strong>Claude Sonnet 4 model as subagents</strong> outperformed a single-agent system (using Opus 4) by <strong>90.2%</strong> on Anthropic&rsquo;s internal research eval.</p><p>A classic example: find every board member of every IT company in the S&amp;P 500. This kind of breadth-first task — fanning out many searches at once — fails for a single agent searching sequentially, but multiple subagents dividing the work in parallel can handle it.</p><hr><h2 id=2-architecture-the-orchestrator-worker-pattern>2. Architecture: The Orchestrator-Worker Pattern<a hidden class=anchor aria-hidden=true href=#2-architecture-the-orchestrator-worker-pattern>#</a></h2><p>The core is an <strong>orchestrator-worker</strong> pattern:</p><ul><li><strong>Lead Agent</strong> — analyzes the problem, forms a strategy, writes its plan to external <strong>memory</strong> (so a context overflow doesn&rsquo;t wipe out the strategy), then spawns several subagents.</li><li><strong>Subagents</strong> — each gets a specific task, searches independently, uses interleaved thinking to evaluate results, and returns only its <strong>filtered</strong> findings to the lead. A subagent acts like an &ldquo;intelligent filter.&rdquo;</li><li><strong>CitationAgent</strong> — at the very end, dedicated to attributing each conclusion back to its sources.</li></ul><p>Here&rsquo;s the overall structure — one Lead Agent coordinating at the top, several Subagents working in parallel below:</p><p><img alt="The multi-agent architecture in action: user queries flow through a lead agent that creates specialized subagents to search for different aspects in parallel." loading=lazy src=/posts/multi_agent_research/architecture.png>
-<em>Source: <a href=https://www.anthropic.com/engineering/multi-agent-research-system>Anthropic — How we built our multi-agent research system</a></em></p><p>Viewed as a timeline, the flow looks like this — note that after aggregating, the Lead Agent can <strong>loop back for more research</strong>, forming a cycle:</p><pre tabindex=0><code>  ① user query
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application | AI Engineering Journal: Joy, Thoughts and Practice</title>
+<meta name="keywords" content="">
+<meta name="description" content="Anthropic&rsquo;s Deep Research is a pioneering AI application built on a multi-agent architecture. There are many valuable AI engineering lessons we can learn from their experience building such a system.">
+<meta name="author" content="">
+<link rel="canonical" href="https://tiejun-ai.github.io/posts/multi_agent_research/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.cd9298b33628769aa1bc1acebbbfd7aa11ce81dfe03484d479e1907760249a1d.css" integrity="sha256-zZKYszYodpqhvBrOu7/XqhHOgd/gNITUeeGQd2Akmh0=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://tiejun-ai.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://tiejun-ai.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://tiejun-ai.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://tiejun-ai.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://tiejun-ai.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://tiejun-ai.github.io/posts/multi_agent_research/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://tiejun-ai.github.io/posts/multi_agent_research/">
+  <meta property="og:site_name" content="AI Engineering Journal: Joy, Thoughts and Practice">
+  <meta property="og:title" content="Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application">
+  <meta property="og:description" content="Anthropic’s Deep Research is a pioneering AI application built on a multi-agent architecture. There are many valuable AI engineering lessons we can learn from their experience building such a system.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-06-26T00:00:00-07:00">
+    <meta property="article:modified_time" content="2026-06-26T00:00:00-07:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application">
+  <meta name="twitter:description" content="Anthropic’s Deep Research is a pioneering AI application built on a multi-agent architecture. There are many valuable AI engineering lessons we can learn from their experience building such a system.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://tiejun-ai.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application",
+      "item": "https://tiejun-ai.github.io/posts/multi_agent_research/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application",
+  "name": "Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application",
+  "description": "Anthropic\u0026rsquo;s Deep Research is a pioneering AI application built on a multi-agent architecture. There are many valuable AI engineering lessons we can learn from their experience building such a system.",
+  "keywords": [
+    
+  ],
+  "articleBody": "Anthropic published an excellent engineering blog on how they built their Deep Research feature on a multi-agent architecture. It’s a canonical multi-agent system, full of valuable innovations and hard-won practical lessons that are well worth studying as an AI engineer.\nOriginal: How we built our multi-agent research system\n1. Why Multi-Agent? Anthropic’s definition of Deep Research: open-ended problems where you can’t predict the steps in advance. You can’t hardcode a fixed path for exploring a complex topic, because the process itself is dynamic and path-dependent — as the investigation unfolds, the agent needs to pivot, chase down subtopics, or search for new information — just like a human doing deep research.\nThus a multi-agent architecture is a good fit for Deep Research:\nParallel exploration — multiple subagents run at the same time, each with its own independent context window, exploring different facets of the problem. Separation of concerns — each subagent has its own tools, prompt, and exploration trajectory. This reduces path dependence and lets each line of investigation go deeper and stay more independent. Breaking the single-context ceiling — research often needs to process more information than a single agent’s context window can hold; spreading it across multiple agents fits far more in total context. How well does it work? A multi-agent system using Claude Opus 4 model as the lead agent and Claude Sonnet 4 model as subagents outperformed a single-agent system (using Opus 4) by 90.2% on Anthropic’s internal research eval.\nA classic example: find every board member of every IT company in the S\u0026P 500. This kind of breadth-first task — fanning out many searches at once — fails for a single agent searching sequentially, but multiple subagents dividing the work in parallel can handle it.\n2. Architecture: The Orchestrator-Worker Pattern The core is an orchestrator-worker pattern:\nLead Agent — analyzes the problem, forms a strategy, writes its plan to external memory (so a context overflow doesn’t wipe out the strategy), then spawns several subagents. Subagents — each gets a specific task, searches independently, uses interleaved thinking to evaluate results, and returns only its filtered findings to the lead. A subagent acts like an “intelligent filter.” CitationAgent — at the very end, dedicated to attributing each conclusion back to its sources. Here’s the overall structure — one Lead Agent coordinating at the top, several Subagents working in parallel below:\nSource: Anthropic — How we built our multi-agent research system\nViewed as a timeline, the flow looks like this — note that after aggregating, the Lead Agent can loop back for more research, forming a cycle:\n① user query │ ▼ ② Lead Agent reasons + plans ──► writes plan to memory │ ▼ ③ spawn 3–5 subagents in parallel ◄──────────────┐ │ │ ▼ │ needs ④ each subagent fires 3+ tool calls in parallel │ more │ │ research ▼ │ ⑤ Lead Agent aggregates findings ─────────────────┘ │ enough? ▼ ⑥ CitationAgent attributes sources │ ▼ ⑦ return final answer with citations The key is parallelism: the Lead Agent spawns 3–5 subagents at once, and each subagent fires multiple tool calls in parallel. For complex problems, this can cut research time by up to 90%.\n3. The Cost of Parallelism: Token Economics There’s no free lunch. Multi-agents are powerful and parallelism is fast, but they burn tokens:\nregular chat ▏ 1× (baseline) single agent ▏▏▏▏ ~4× multi-agent system ▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏ ~15× Hence an important principle: multi-agent is only worth it when the task’s value is high enough to cover this cost.\nWhy does multi-agent win? Anthropic offers an interesting and important conclusion:\nMulti-agent systems work mainly because they help spend enough tokens to solve the problem.\nOn the BrowseComp eval, three factors together — token usage, number of tool calls, and model choice — explained 95% of the performance variance, and token usage alone explained 80%. In other words, “feeding” a task enough tokens to explore is itself the main source of performance — and multi-agent is precisely a way to scale token usage beyond what a single agent’s context can hold.\n4. Prompt Engineering: The Primary Lever to Harness Agents Every agent uses an LLM driven by a prompt, so as Anthropic puts it: “prompt engineering was our primary lever for improving these behaviors.” Anthropic distilled 8 principles:\nThink like your agents. Step through the agent’s behavior to see its failure modes (spawning too many subagents, verbose queries, picking the wrong tool). Teach the orchestrator how to delegate. Each delegated task must spell out the objective, output format, which tools to use, and where the boundaries are. Scale effort to query complexity. Put the rules in the prompt: simple fact research = 1 agent / 3–10 calls; comparison research = 2–4 subagents; complex research = 10+ subagents with clear divisions. Tool design and selection are critical. Treat tool interfaces as UX. An agent that picks the wrong tool almost always fails; each tool needs a clear, non-overlapping description. Let agents improve themselves. Claude 4 can diagnose its own failures and improve prompts. A “tool-testing agent” that rewrote tool descriptions cut later agents’ task completion time by 40%. Start wide, then narrow down. Begin with short, broad queries to see what’s out there, then progressively focus — mirroring how human experts research. Guide the thinking process. Use extended thinking as a “controllable scratchpad.” The Lead Agent uses it to plan; subagents use interleaved thinking after each tool call to assess quality, find gaps, and refine the next step. Parallel tool calling transforms speed. The Lead Agent spawns subagents in parallel, and subagents call tools in parallel, compressing complex research time by up to 90%. 5. Evaluation Start small. About 20 real-scenario queries is enough; early iterations with help of the eval have outsized impact (success rates can jump from 30% to 80%). LLM-as-judge. Use a single prompt to score 0.0–1.0 across multiple dimensions: factual accuracy, citation accuracy, completeness, source quality, and tool efficiency. Human evaluation is indispensable. People catch problems the LLM judge misses — like agents favoring SEO content farms over authoritative academic PDFs. 6. Production Challenges Putting agents into production surfaces problems ordinary software doesn’t have:\nState and error accumulation. Agents run for a long time while holding state, so a small error compounds. Fix: durable execution, checkpoint-and-resume, and letting agents handle tool failures gracefully. Non-deterministic debugging. The same prompt can produce different decisions each run. Fix: full production tracing and monitoring of decision patterns. Deployment coordination. Agents may be mid-run when you update. Fix: rainbow deployments — old and new versions live at once, gradually shifting traffic. Key Takeaways Why: Deep Research tasks are unpredictable, the information exceeds a single agent’s context, and the work is parallelizable → multi-agent. Architecture: orchestrator-worker — Lead Agent delegates + subagents run in parallel + CitationAgent attributes sources. Results: multi-agent systems score 90.2% higher than a single agent; up to 90% faster; but ~15× the tokens of a chat; token usage alone explains 80% of the performance variance (three factors together, 95%). Core conclusion: multi-agent works mainly because it can “spend enough tokens to solve the problem.” Prompt: prompt engineering is the primary lever — delegate specifically, scale effort to complexity, treat tool design as UX, start wide then narrow, let agents improve themselves, and exploit parallelism. In one line: multi-agent suits high-value, parallelizable tasks whose information exceeds a single context — but it relies on careful prompt engineering, good tool design, solid evaluation, and a production system that can survive long-running execution.\nIf you want to see this architecture in code, I built an open-source implementation of this exact pattern in a companion post.\nReferences Anthropic (2025). How we built our multi-agent research system. anthropic.com/engineering/multi-agent-research-system My open-source build of this architecture: tiejun-ai.github.io/posts/deep_research Enjoyed this article? ⭐ Star the repo on GitHub!\n",
+  "wordCount" : "1294",
+  "inLanguage": "en",
+  "datePublished": "2026-06-26T00:00:00-07:00",
+  "dateModified": "2026-06-26T00:00:00-07:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://tiejun-ai.github.io/posts/multi_agent_research/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Engineering Journal: Joy, Thoughts and Practice",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://tiejun-ai.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://tiejun-ai.github.io/" accesskey="h" title="AI Engineering Journal: Joy, Thoughts and Practice (Alt + H)">AI Engineering Journal: Joy, Thoughts and Practice</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu" class="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Anthropic Deep Research: Lessons from a Canonical Multi-Agent AI Application
+    </h1>
+    <div class="post-meta">
+
+<span title='2026-06-26 00:00:00 -0700 PDT'>June 26, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content md-content"><p>Anthropic published an excellent engineering blog on how they built their <strong>Deep Research</strong> feature on a <strong>multi-agent</strong> architecture. It&rsquo;s a canonical multi-agent system, full of valuable innovations and hard-won practical lessons that are well worth studying as an AI engineer.</p>
+<blockquote>
+<p>Original: <a href="https://www.anthropic.com/engineering/multi-agent-research-system">How we built our multi-agent research system</a></p>
+</blockquote>
+<hr>
+<h2 id="1-why-multi-agent">1. Why Multi-Agent?<a hidden class="anchor" aria-hidden="true" href="#1-why-multi-agent">#</a></h2>
+<p>Anthropic&rsquo;s definition of Deep Research: <strong>open-ended problems where you can&rsquo;t predict the steps in advance.</strong> You can&rsquo;t hardcode a fixed path for exploring a complex topic, because the process itself is dynamic and <strong>path-dependent</strong> — as the investigation unfolds, the agent needs to pivot, chase down subtopics, or search for new information — just like a human doing deep research.</p>
+<p>Thus a multi-agent architecture is a good fit for Deep Research:</p>
+<ol>
+<li><strong>Parallel exploration</strong> — multiple subagents run at the same time, each with its own <strong>independent context window</strong>, exploring different facets of the problem.</li>
+<li><strong>Separation of concerns</strong> — each subagent has its own tools, prompt, and exploration trajectory. This reduces path dependence and lets each line of investigation go deeper and stay more independent.</li>
+<li><strong>Breaking the single-context ceiling</strong> — research often needs to process more information than a single agent&rsquo;s context window can hold; spreading it across multiple agents fits far more in total context.</li>
+</ol>
+<p>How well does it work? A multi-agent system using <strong>Claude Opus 4 model as the lead agent</strong> and <strong>Claude Sonnet 4 model as subagents</strong> outperformed a single-agent system (using Opus 4) by <strong>90.2%</strong> on Anthropic&rsquo;s internal research eval.</p>
+<p>A classic example: find every board member of every IT company in the S&amp;P 500. This kind of breadth-first task — fanning out many searches at once — fails for a single agent searching sequentially, but multiple subagents dividing the work in parallel can handle it.</p>
+<hr>
+<h2 id="2-architecture-the-orchestrator-worker-pattern">2. Architecture: The Orchestrator-Worker Pattern<a hidden class="anchor" aria-hidden="true" href="#2-architecture-the-orchestrator-worker-pattern">#</a></h2>
+<p>The core is an <strong>orchestrator-worker</strong> pattern:</p>
+<ul>
+<li><strong>Lead Agent</strong> — analyzes the problem, forms a strategy, writes its plan to external <strong>memory</strong> (so a context overflow doesn&rsquo;t wipe out the strategy), then spawns several subagents.</li>
+<li><strong>Subagents</strong> — each gets a specific task, searches independently, uses interleaved thinking to evaluate results, and returns only its <strong>filtered</strong> findings to the lead. A subagent acts like an &ldquo;intelligent filter.&rdquo;</li>
+<li><strong>CitationAgent</strong> — at the very end, dedicated to attributing each conclusion back to its sources.</li>
+</ul>
+<p>Here&rsquo;s the overall structure — one Lead Agent coordinating at the top, several Subagents working in parallel below:</p>
+<p><img alt="The multi-agent architecture in action: user queries flow through a lead agent that creates specialized subagents to search for different aspects in parallel." loading="lazy" src="/posts/multi_agent_research/architecture.png">
+<em>Source: <a href="https://www.anthropic.com/engineering/multi-agent-research-system">Anthropic — How we built our multi-agent research system</a></em></p>
+<p>Viewed as a timeline, the flow looks like this — note that after aggregating, the Lead Agent can <strong>loop back for more research</strong>, forming a cycle:</p>
+<pre tabindex="0"><code>  ① user query
        │
        ▼
   ② Lead Agent reasons + plans  ──►  writes plan to memory
@@ -20,11 +221,155 @@
        │
        ▼
   ⑦ return final answer with citations
-</code></pre><p>The key is <strong>parallelism</strong>: the Lead Agent spawns 3–5 subagents at once, and each subagent fires multiple tool calls in parallel. For complex problems, this can cut research time by <strong>up to 90%</strong>.</p><hr><h2 id=3-the-cost-of-parallelism-token-economics>3. The Cost of Parallelism: Token Economics<a hidden class=anchor aria-hidden=true href=#3-the-cost-of-parallelism-token-economics>#</a></h2><p>There&rsquo;s no free lunch. Multi-agents are powerful and parallelism is fast, but they burn tokens:</p><pre tabindex=0><code>   regular chat          ▏ 1×    (baseline)
+</code></pre><p>The key is <strong>parallelism</strong>: the Lead Agent spawns 3–5 subagents at once, and each subagent fires multiple tool calls in parallel. For complex problems, this can cut research time by <strong>up to 90%</strong>.</p>
+<hr>
+<h2 id="3-the-cost-of-parallelism-token-economics">3. The Cost of Parallelism: Token Economics<a hidden class="anchor" aria-hidden="true" href="#3-the-cost-of-parallelism-token-economics">#</a></h2>
+<p>There&rsquo;s no free lunch. Multi-agents are powerful and parallelism is fast, but they burn tokens:</p>
+<pre tabindex="0"><code>   regular chat          ▏ 1×    (baseline)
    single agent          ▏▏▏▏ ~4×
    multi-agent system    ▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏ ~15×
-</code></pre><p>Hence an important principle: <strong>multi-agent is only worth it when the task&rsquo;s value is high enough to cover this cost.</strong></p><p>Why does multi-agent win? Anthropic offers an interesting and important conclusion:</p><blockquote><p>Multi-agent systems work mainly because they help spend enough tokens to solve the problem.</p></blockquote><p>On the BrowseComp eval, three factors together — <strong>token usage, number of tool calls, and model choice</strong> — explained <strong>95%</strong> of the performance variance, and <strong>token usage alone explained 80%.</strong> In other words, &ldquo;feeding&rdquo; a task enough tokens to explore is itself the main source of performance — and multi-agent is precisely a way to scale token usage beyond what a single agent&rsquo;s context can hold.</p><hr><h2 id=4-prompt-engineering-the-primary-lever-to-harness-agents>4. Prompt Engineering: The Primary Lever to Harness Agents<a hidden class=anchor aria-hidden=true href=#4-prompt-engineering-the-primary-lever-to-harness-agents>#</a></h2><p>Every agent uses an LLM driven by a prompt, so as Anthropic puts it: <strong>&ldquo;prompt engineering was our primary lever for improving these behaviors.&rdquo;</strong> Anthropic distilled 8 principles:</p><ol><li><strong>Think like your agents.</strong> Step through the agent&rsquo;s behavior to see its failure modes (spawning too many subagents, verbose queries, picking the wrong tool).</li><li><strong>Teach the orchestrator how to delegate.</strong> Each delegated task must spell out the objective, output format, which tools to use, and where the boundaries are.</li><li><strong>Scale effort to query complexity.</strong> Put the rules in the prompt: simple fact research = 1 agent / 3–10 calls; comparison research = 2–4 subagents; complex research = 10+ subagents with clear divisions.</li><li><strong>Tool design and selection are critical.</strong> Treat tool interfaces as UX. An agent that picks the wrong tool almost always fails; each tool needs a clear, non-overlapping description.</li><li><strong>Let agents improve themselves.</strong> Claude 4 can diagnose its own failures and improve prompts. A &ldquo;tool-testing agent&rdquo; that rewrote tool descriptions cut later agents&rsquo; task completion time by <strong>40%</strong>.</li><li><strong>Start wide, then narrow down.</strong> Begin with short, broad queries to see what&rsquo;s out there, then progressively focus — mirroring how human experts research.</li><li><strong>Guide the thinking process.</strong> Use extended thinking as a &ldquo;controllable scratchpad.&rdquo; The Lead Agent uses it to plan; subagents use interleaved thinking after each tool call to assess quality, find gaps, and refine the next step.</li><li><strong>Parallel tool calling transforms speed.</strong> The Lead Agent spawns subagents in parallel, and subagents call tools in parallel, compressing complex research time by up to <strong>90%</strong>.</li></ol><hr><h2 id=5-evaluation>5. Evaluation<a hidden class=anchor aria-hidden=true href=#5-evaluation>#</a></h2><ul><li><strong>Start small.</strong> About 20 real-scenario queries is enough; early iterations with help of the eval have outsized impact (success rates can jump from 30% to 80%).</li><li><strong>LLM-as-judge.</strong> Use a single prompt to score 0.0–1.0 across multiple dimensions: factual accuracy, citation accuracy, completeness, source quality, and tool efficiency.</li><li><strong>Human evaluation is indispensable.</strong> People catch problems the LLM judge misses — like agents favoring SEO content farms over authoritative academic PDFs.</li></ul><hr><h2 id=6-production-challenges>6. Production Challenges<a hidden class=anchor aria-hidden=true href=#6-production-challenges>#</a></h2><p>Putting agents into production surfaces problems ordinary software doesn&rsquo;t have:</p><ul><li><strong>State and error accumulation.</strong> Agents run for a long time while holding state, so a small error compounds. Fix: durable execution, checkpoint-and-resume, and letting agents handle tool failures gracefully.</li><li><strong>Non-deterministic debugging.</strong> The same prompt can produce different decisions each run. Fix: full production tracing and monitoring of decision patterns.</li><li><strong>Deployment coordination.</strong> Agents may be mid-run when you update. Fix: rainbow deployments — old and new versions live at once, gradually shifting traffic.</li></ul><hr><h2 id=key-takeaways>Key Takeaways<a hidden class=anchor aria-hidden=true href=#key-takeaways>#</a></h2><ul><li><strong>Why:</strong> Deep Research tasks are unpredictable, the information exceeds a single agent&rsquo;s context, and the work is parallelizable → multi-agent.</li><li><strong>Architecture:</strong> orchestrator-worker — Lead Agent delegates + subagents run in parallel + CitationAgent attributes sources.</li><li><strong>Results:</strong> multi-agent systems score 90.2% higher than a single agent; up to 90% faster; but ~15× the tokens of a chat; token usage alone explains 80% of the performance variance (three factors together, 95%).</li><li><strong>Core conclusion:</strong> multi-agent works mainly because it can &ldquo;spend enough tokens to solve the problem.&rdquo;</li><li><strong>Prompt:</strong> prompt engineering is the primary lever — delegate specifically, scale effort to complexity, treat tool design as UX, start wide then narrow, let agents improve themselves, and exploit parallelism.</li></ul><p>In one line: <strong>multi-agent suits high-value, parallelizable tasks whose information exceeds a single context — but it relies on careful prompt engineering, good tool design, solid evaluation, and a production system that can survive long-running execution.</strong></p><p>If you want to see this architecture in code, I built an open-source implementation of this exact pattern in a <a href=https://tiejun-ai.github.io/posts/deep_research/>companion post</a>.</p><hr><h3 id=references>References<a hidden class=anchor aria-hidden=true href=#references>#</a></h3><ul><li>Anthropic (2025). <em>How we built our multi-agent research system.</em> <a href=https://www.anthropic.com/engineering/multi-agent-research-system>anthropic.com/engineering/multi-agent-research-system</a></li><li>My open-source build of this architecture: <a href=https://tiejun-ai.github.io/posts/deep_research/>tiejun-ai.github.io/posts/deep_research</a></li></ul><hr><p>Enjoyed this article? ⭐ Star the <a href=https://github.com/tiejun-ai/tiejun-ai.github.io>repo</a> on GitHub!</p></div><footer class=post-footer><ul class=post-tags></ul></footer></article></main><footer class=footer><span>&copy; 2026 <a href=https://tiejun-ai.github.io/>AI Engineering Journal: Joy, Thoughts and Practice</a></span> ·
-<span>Powered by
-<a href="https://gohugo.io/?utm_source=papermod" rel=noopener target=_blank>Hugo</a> &
-<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top id=top-link class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey=g><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
-</a><script>let menu=document.getElementById("menu");if(menu){const e=localStorage.getItem("menu-scroll-position");e&&(menu.scrollLeft=parseInt(e,10)),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}}document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var toplink=document.getElementById("top-link");window.onscroll=function(){const e=window.innerHeight;document.body.scrollTop>e||document.documentElement.scrollTop>e?toplink.classList.remove("hidden"):toplink.classList.add("hidden")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{const e=document.querySelector("html");e.dataset.theme==="dark"?(e.dataset.theme="light",localStorage.setItem("pref-theme","light")):(e.dataset.theme="dark",localStorage.setItem("pref-theme","dark"))})</script></body></html>
+</code></pre><p>Hence an important principle: <strong>multi-agent is only worth it when the task&rsquo;s value is high enough to cover this cost.</strong></p>
+<p>Why does multi-agent win? Anthropic offers an interesting and important conclusion:</p>
+<blockquote>
+<p>Multi-agent systems work mainly because they help spend enough tokens to solve the problem.</p>
+</blockquote>
+<p>On the BrowseComp eval, three factors together — <strong>token usage, number of tool calls, and model choice</strong> — explained <strong>95%</strong> of the performance variance, and <strong>token usage alone explained 80%.</strong> In other words, &ldquo;feeding&rdquo; a task enough tokens to explore is itself the main source of performance — and multi-agent is precisely a way to scale token usage beyond what a single agent&rsquo;s context can hold.</p>
+<hr>
+<h2 id="4-prompt-engineering-the-primary-lever-to-harness-agents">4. Prompt Engineering: The Primary Lever to Harness Agents<a hidden class="anchor" aria-hidden="true" href="#4-prompt-engineering-the-primary-lever-to-harness-agents">#</a></h2>
+<p>Every agent uses an LLM driven by a prompt, so as Anthropic puts it: <strong>&ldquo;prompt engineering was our primary lever for improving these behaviors.&rdquo;</strong> Anthropic distilled 8 principles:</p>
+<ol>
+<li><strong>Think like your agents.</strong> Step through the agent&rsquo;s behavior to see its failure modes (spawning too many subagents, verbose queries, picking the wrong tool).</li>
+<li><strong>Teach the orchestrator how to delegate.</strong> Each delegated task must spell out the objective, output format, which tools to use, and where the boundaries are.</li>
+<li><strong>Scale effort to query complexity.</strong> Put the rules in the prompt: simple fact research = 1 agent / 3–10 calls; comparison research = 2–4 subagents; complex research = 10+ subagents with clear divisions.</li>
+<li><strong>Tool design and selection are critical.</strong> Treat tool interfaces as UX. An agent that picks the wrong tool almost always fails; each tool needs a clear, non-overlapping description.</li>
+<li><strong>Let agents improve themselves.</strong> Claude 4 can diagnose its own failures and improve prompts. A &ldquo;tool-testing agent&rdquo; that rewrote tool descriptions cut later agents&rsquo; task completion time by <strong>40%</strong>.</li>
+<li><strong>Start wide, then narrow down.</strong> Begin with short, broad queries to see what&rsquo;s out there, then progressively focus — mirroring how human experts research.</li>
+<li><strong>Guide the thinking process.</strong> Use extended thinking as a &ldquo;controllable scratchpad.&rdquo; The Lead Agent uses it to plan; subagents use interleaved thinking after each tool call to assess quality, find gaps, and refine the next step.</li>
+<li><strong>Parallel tool calling transforms speed.</strong> The Lead Agent spawns subagents in parallel, and subagents call tools in parallel, compressing complex research time by up to <strong>90%</strong>.</li>
+</ol>
+<hr>
+<h2 id="5-evaluation">5. Evaluation<a hidden class="anchor" aria-hidden="true" href="#5-evaluation">#</a></h2>
+<ul>
+<li><strong>Start small.</strong> About 20 real-scenario queries is enough; early iterations with help of the eval have outsized impact (success rates can jump from 30% to 80%).</li>
+<li><strong>LLM-as-judge.</strong> Use a single prompt to score 0.0–1.0 across multiple dimensions: factual accuracy, citation accuracy, completeness, source quality, and tool efficiency.</li>
+<li><strong>Human evaluation is indispensable.</strong> People catch problems the LLM judge misses — like agents favoring SEO content farms over authoritative academic PDFs.</li>
+</ul>
+<hr>
+<h2 id="6-production-challenges">6. Production Challenges<a hidden class="anchor" aria-hidden="true" href="#6-production-challenges">#</a></h2>
+<p>Putting agents into production surfaces problems ordinary software doesn&rsquo;t have:</p>
+<ul>
+<li><strong>State and error accumulation.</strong> Agents run for a long time while holding state, so a small error compounds. Fix: durable execution, checkpoint-and-resume, and letting agents handle tool failures gracefully.</li>
+<li><strong>Non-deterministic debugging.</strong> The same prompt can produce different decisions each run. Fix: full production tracing and monitoring of decision patterns.</li>
+<li><strong>Deployment coordination.</strong> Agents may be mid-run when you update. Fix: rainbow deployments — old and new versions live at once, gradually shifting traffic.</li>
+</ul>
+<hr>
+<h2 id="key-takeaways">Key Takeaways<a hidden class="anchor" aria-hidden="true" href="#key-takeaways">#</a></h2>
+<ul>
+<li><strong>Why:</strong> Deep Research tasks are unpredictable, the information exceeds a single agent&rsquo;s context, and the work is parallelizable → multi-agent.</li>
+<li><strong>Architecture:</strong> orchestrator-worker — Lead Agent delegates + subagents run in parallel + CitationAgent attributes sources.</li>
+<li><strong>Results:</strong> multi-agent systems score 90.2% higher than a single agent; up to 90% faster; but ~15× the tokens of a chat; token usage alone explains 80% of the performance variance (three factors together, 95%).</li>
+<li><strong>Core conclusion:</strong> multi-agent works mainly because it can &ldquo;spend enough tokens to solve the problem.&rdquo;</li>
+<li><strong>Prompt:</strong> prompt engineering is the primary lever — delegate specifically, scale effort to complexity, treat tool design as UX, start wide then narrow, let agents improve themselves, and exploit parallelism.</li>
+</ul>
+<p>In one line: <strong>multi-agent suits high-value, parallelizable tasks whose information exceeds a single context — but it relies on careful prompt engineering, good tool design, solid evaluation, and a production system that can survive long-running execution.</strong></p>
+<p>If you want to see this architecture in code, I built an open-source implementation of this exact pattern in a <a href="https://tiejun-ai.github.io/posts/deep_research/">companion post</a>.</p>
+<hr>
+<h3 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h3>
+<ul>
+<li>Anthropic (2025). <em>How we built our multi-agent research system.</em> <a href="https://www.anthropic.com/engineering/multi-agent-research-system">anthropic.com/engineering/multi-agent-research-system</a></li>
+<li>My open-source build of this architecture: <a href="https://tiejun-ai.github.io/posts/deep_research/">tiejun-ai.github.io/posts/deep_research</a></li>
+</ul>
+<hr>
+<p>Enjoyed this article? ⭐ Star the <a href="https://github.com/tiejun-ai/tiejun-ai.github.io">repo</a> on GitHub!</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://tiejun-ai.github.io/">AI Engineering Journal: Joy, Thoughts and Practice</a></span> · 
+
+    
+    
+    <span>
+        Powered by
+        <a href="https://gohugo.io/?utm_source=papermod" rel="noopener" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" id="top-link" class="top-link hidden" aria-label="go to top" title="Go to Top (Alt + G)" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevrons-up">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var toplink = document.getElementById("top-link");
+    window.onscroll = function () {
+        const scrollThreshold = window.innerHeight;
+        if (document.body.scrollTop > scrollThreshold || document.documentElement.scrollTop > scrollThreshold) {
+            toplink.classList.remove("hidden");
+        } else {
+            toplink.classList.add("hidden");
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
