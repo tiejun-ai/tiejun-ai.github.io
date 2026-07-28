@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 180" font-family="Georgia,'Times New Roman',serif">
+  <rect x="0.5" y="0.5" width="659" height="179" rx="10" fill="#ffffff" stroke="#e2e2e2" stroke-width="1"/>
+
+  <!-- formula, laid out segment by segment so the braces can line up underneath -->
+  <text font-size="19" fill="#1c3a5e">
+    <tspan x="34" y="62" font-style="italic">L</tspan>
+    <tspan x="56" y="62">=</tspan>
+    <tspan x="82" y="62">&#8214;</tspan><tspan font-style="italic">x</tspan><tspan> &#8722; </tspan><tspan font-style="italic">x&#770;</tspan><tspan>&#8214;&#178;</tspan>
+    <tspan x="182" y="62">+</tspan>
+  </text>
+  <text x="208" y="66" font-size="28" fill="#1c3a5e">&#931;</text>
+  <text x="228" y="72" font-size="12" font-style="italic" fill="#1c3a5e">d</text>
+  <text font-size="19" fill="#1c3a5e">
+    <tspan x="244" y="62">(</tspan>
+    <tspan x="260" y="62">&#8214;sg[</tspan><tspan font-style="italic">r</tspan><tspan font-size="12" baseline-shift="-28%" font-style="italic">d</tspan><tspan font-size="19">] &#8722; </tspan><tspan font-style="italic">e</tspan><tspan font-size="12" baseline-shift="-28%" font-style="italic">c</tspan><tspan font-size="12" baseline-shift="-28%" font-style="italic">d</tspan><tspan font-size="19">&#8214;&#178;</tspan>
+    <tspan x="404" y="62">+</tspan>
+    <tspan x="434" y="62" font-style="italic">&#946;</tspan><tspan>&#183;&#8214;</tspan><tspan font-style="italic">r</tspan><tspan font-size="12" baseline-shift="-28%" font-style="italic">d</tspan><tspan font-size="19"> &#8722; sg[</tspan><tspan font-style="italic">e</tspan><tspan font-size="12" baseline-shift="-28%" font-style="italic">c</tspan><tspan font-size="12" baseline-shift="-28%" font-style="italic">d</tspan><tspan font-size="19">]&#8214;&#178;</tspan>
+    <tspan x="576" y="62">)</tspan>
+  </text>
+
+  <!-- under-braces -->
+  <path d="M82,80 q0,7 7,7 h17 q7,0 7,7 q0,-7 7,-7 h17 q7,0 7,-7" fill="none" stroke="#8a8a8a" stroke-width="1.2"/>
+  <text x="113" y="112" text-anchor="middle" font-size="13" fill="#555">reconstruction</text>
+
+  <path d="M260,80 q0,7 7,7 h41 q7,0 7,7 q0,-7 7,-7 h41 q7,0 7,-7" fill="none" stroke="#8a8a8a" stroke-width="1.2"/>
+  <text x="315" y="112" text-anchor="middle" font-size="13" fill="#555">codebook loss</text>
+
+  <path d="M434,80 q0,7 7,7 h50 q7,0 7,7 q0,-7 7,-7 h50 q7,0 7,-7" fill="none" stroke="#8a8a8a" stroke-width="1.2"/>
+  <text x="498" y="112" text-anchor="middle" font-size="13" fill="#555">commitment loss</text>
+
+  <!-- legend -->
+  <line x1="34" y1="130" x2="626" y2="130" stroke="#eee" stroke-width="1"/>
+  <text x="34" y="152" font-size="12.5" fill="#666">sg[&#183;] = stop-gradient (treated as a constant in backprop)</text>
+  <text x="34" y="170" font-size="12.5" fill="#666">e<tspan font-size="10" baseline-shift="-28%">c</tspan><tspan font-size="10" baseline-shift="-28%">d</tspan><tspan font-size="12.5"> = the codeword picked at level </tspan><tspan font-style="italic">d</tspan><tspan>&#160;&#160;&#183;&#160;&#160;the sum runs over every level </tspan><tspan font-style="italic">d</tspan></text>
+</svg>

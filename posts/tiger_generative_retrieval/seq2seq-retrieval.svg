@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 372" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#555"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="790" height="372" fill="#ffffff"/>
+
+  <!-- input sequence -->
+  <text x="330" y="22" text-anchor="middle" font-size="12" font-style="italic" fill="#555">user history (items 1..n, each = 4 codewords) flattened into one token sequence</text>
+  <rect x="60" y="32" width="540" height="44" rx="10" fill="#fdf0c9" stroke="#e0b84c" stroke-width="1.4"/>
+  <text x="330" y="60" text-anchor="middle" font-size="14" fill="#7a5a12" font-family="'SF Mono',Menlo,Consolas,monospace">(c&#8320;,c&#8321;,c&#8322;,c&#8323;)&#8321;&#160;&#160;&#160;(c&#8320;,c&#8321;,c&#8322;,c&#8323;)&#8322;&#160;&#160;&#160;&#8230;&#160;&#160;&#160;(c&#8320;,c&#8321;,c&#8322;,c&#8323;)&#8345;</text>
+
+  <line x1="330" y1="78" x2="330" y2="108" stroke="#555" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- encoder -->
+  <rect x="210" y="110" width="240" height="48" rx="10" fill="#cfe3f7" stroke="#6aa3d5" stroke-width="1.4"/>
+  <text x="330" y="140" text-anchor="middle" font-size="14.5" font-weight="700" fill="#1c3a5e">Transformer Encoder</text>
+
+  <line x1="330" y1="158" x2="330" y2="196" stroke="#555" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="340" y="182" font-size="11.5" font-style="italic" fill="#555">encoded context</text>
+
+  <!-- decoder -->
+  <rect x="210" y="198" width="240" height="48" rx="10" fill="#cfe3f7" stroke="#6aa3d5" stroke-width="1.4"/>
+  <text x="330" y="228" text-anchor="middle" font-size="14.5" font-weight="700" fill="#1c3a5e">Transformer Decoder</text>
+
+  <!-- BOS in -->
+  <text x="120" y="227" text-anchor="middle" font-size="13.5" font-family="'SF Mono',Menlo,Consolas,monospace" fill="#444">&#60;BOS&#62;</text>
+  <line x1="160" y1="222" x2="204" y2="222" stroke="#555" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- autoregressive codewords out -->
+  <line x1="452" y1="222" x2="496" y2="222" stroke="#555" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="640" y="190" text-anchor="middle" font-size="11.5" font-style="italic" fill="#555">one codeword at a time, each fed back in</text>
+
+  <rect x="502" y="206" width="36" height="32" rx="7" fill="#d9f0d9" stroke="#7fbf7f" stroke-width="1.3"/>
+  <text x="520" y="227" text-anchor="middle" font-size="13.5" fill="#2a6b2a">c&#8320;</text>
+  <line x1="542" y1="222" x2="562" y2="222" stroke="#555" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <rect x="568" y="206" width="36" height="32" rx="7" fill="#d9f0d9" stroke="#7fbf7f" stroke-width="1.3"/>
+  <text x="586" y="227" text-anchor="middle" font-size="13.5" fill="#2a6b2a">c&#8321;</text>
+  <line x1="608" y1="222" x2="628" y2="222" stroke="#555" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <rect x="634" y="206" width="36" height="32" rx="7" fill="#d9f0d9" stroke="#7fbf7f" stroke-width="1.3"/>
+  <text x="652" y="227" text-anchor="middle" font-size="13.5" fill="#2a6b2a">c&#8322;</text>
+  <line x1="674" y1="222" x2="694" y2="222" stroke="#555" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <rect x="700" y="206" width="36" height="32" rx="7" fill="#d9f0d9" stroke="#7fbf7f" stroke-width="1.3"/>
+  <text x="718" y="227" text-anchor="middle" font-size="13.5" fill="#2a6b2a">c&#8323;</text>
+
+  <path d="M502,248 v8 h234 v-8" fill="none" stroke="#8a8a8a" stroke-width="1.1"/>
+  <text x="619" y="273" text-anchor="middle" font-size="12" font-style="italic" fill="#2a6b2a">the next item&#8217;s Semantic ID</text>
+
+  <!-- elbow down to the serving row -->
+  <path d="M330,246 v42 h-215 v14" fill="none" stroke="#555" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="340" y="284" font-size="11.5" font-style="italic" fill="#555">at serving</text>
+
+  <!-- serving row -->
+  <rect x="45" y="308" width="140" height="46" rx="10" fill="#cfe3f7" stroke="#6aa3d5" stroke-width="1.4"/>
+  <text x="115" y="336" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1c3a5e">beam search</text>
+
+  <line x1="187" y1="331" x2="219" y2="331" stroke="#555" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <rect x="225" y="308" width="170" height="46" rx="10" fill="#d9f0d9" stroke="#7fbf7f" stroke-width="1.4"/>
+  <text x="310" y="336" text-anchor="middle" font-size="13.5" font-weight="700" fill="#2a6b2a">top-K Semantic IDs</text>
+
+  <line x1="397" y1="331" x2="429" y2="331" stroke="#555" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <rect x="435" y="308" width="140" height="46" rx="10" fill="#f4f4f4" stroke="#ccc" stroke-width="1.2"/>
+  <text x="505" y="336" text-anchor="middle" font-size="13.5" font-weight="700" fill="#444">lookup table</text>
+
+  <line x1="577" y1="331" x2="609" y2="331" stroke="#555" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <rect x="615" y="308" width="130" height="46" rx="10" fill="#fdf0c9" stroke="#e0b84c" stroke-width="1.4"/>
+  <text x="680" y="336" text-anchor="middle" font-size="13.5" font-weight="700" fill="#7a5a12">top-K items</text>
+</svg>
