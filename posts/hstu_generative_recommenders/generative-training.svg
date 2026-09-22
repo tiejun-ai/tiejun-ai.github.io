@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Impression-level training compared with generative training</title>
+  <desc id="desc">Impression-level training repeatedly encodes overlapping prefixes for each target. Generative training encodes a full causal sequence once and supervises many prediction positions.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker>
+    <style>.h{font:700 27px system-ui,sans-serif;fill:#0f172a}.label{font:650 18px system-ui,sans-serif;fill:#0f172a}.text{font:15px system-ui,sans-serif;fill:#334155}.token{stroke:#475569;stroke-width:1.5}.arr{stroke:#64748b;stroke-width:2;fill:none;marker-end:url(#arrow)}</style>
+  </defs>
+  <rect width="1200" height="620" rx="20" fill="#f8fafc"/>
+  <text x="300" y="45" class="h" text-anchor="middle">Impression-level training</text>
+  <text x="900" y="45" class="h" text-anchor="middle">Generative training</text>
+  <line x1="600" y1="25" x2="600" y2="585" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8 8"/>
+
+  <g class="text" text-anchor="middle">
+    <text x="72" y="105" class="label">Example 1</text>
+    <rect x="135" y="78" width="76" height="46" rx="8" fill="#bfdbfe" class="token"/><text x="173" y="107">item 1</text>
+    <path d="M215 101 H258" class="arr"/><rect x="267" y="78" width="90" height="46" rx="8" fill="#bbf7d0" class="token"/><text x="312" y="107">action 1</text>
+
+    <text x="72" y="192" class="label">Example 2</text>
+    <rect x="135" y="165" width="76" height="46" rx="8" fill="#bfdbfe" class="token"/><text x="173" y="194">item 1</text>
+    <rect x="220" y="165" width="76" height="46" rx="8" fill="#bbf7d0" class="token"/><text x="258" y="194">act. 1</text>
+    <rect x="305" y="165" width="76" height="46" rx="8" fill="#bfdbfe" class="token"/><text x="343" y="194">item 2</text>
+    <path d="M385 188 H428" class="arr"/><rect x="437" y="165" width="90" height="46" rx="8" fill="#bbf7d0" class="token"/><text x="482" y="194">action 2</text>
+
+    <text x="72" y="279" class="label">Example 3</text>
+    <rect x="135" y="252" width="58" height="46" rx="8" fill="#bfdbfe" class="token"/><text x="164" y="281">i1</text>
+    <rect x="200" y="252" width="58" height="46" rx="8" fill="#bbf7d0" class="token"/><text x="229" y="281">a1</text>
+    <rect x="265" y="252" width="58" height="46" rx="8" fill="#bfdbfe" class="token"/><text x="294" y="281">i2</text>
+    <rect x="330" y="252" width="58" height="46" rx="8" fill="#bbf7d0" class="token"/><text x="359" y="281">a2</text>
+    <rect x="395" y="252" width="58" height="46" rx="8" fill="#bfdbfe" class="token"/><text x="424" y="281">i3</text>
+    <path d="M457 275 H482" class="arr"/><rect x="491" y="252" width="58" height="46" rx="8" fill="#bbf7d0" class="token"/><text x="520" y="281">a3</text>
+  </g>
+  <path d="M110 335 H550" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+  <text x="330" y="375" class="label" text-anchor="middle">The same history is encoded repeatedly</text>
+  <text x="330" y="405" class="text" text-anchor="middle">For a length-N history, overlapping prefix work accumulates.</text>
+  <text x="330" y="452" class="label" text-anchor="middle">Approximate self-attention cost</text>
+  <text x="330" y="490" style="font:700 28px ui-monospace,monospace;fill:#dc2626" text-anchor="middle">1^2 + 2^2 + ... + N^2 = O(N^3)</text>
+
+  <g class="text" text-anchor="middle">
+    <rect x="650" y="120" width="82" height="52" rx="8" fill="#bfdbfe" class="token"/><text x="691" y="151">item 1</text>
+    <rect x="742" y="120" width="82" height="52" rx="8" fill="#bbf7d0" class="token"/><text x="783" y="151">action 1</text>
+    <rect x="834" y="120" width="82" height="52" rx="8" fill="#bfdbfe" class="token"/><text x="875" y="151">item 2</text>
+    <rect x="926" y="120" width="82" height="52" rx="8" fill="#bbf7d0" class="token"/><text x="967" y="151">action 2</text>
+    <rect x="1018" y="120" width="72" height="52" rx="8" fill="#bfdbfe" class="token"/><text x="1054" y="151">...</text>
+    <rect x="1100" y="120" width="72" height="52" rx="8" fill="#bbf7d0" class="token"/><text x="1136" y="151">aN</text>
+  </g>
+  <path d="M691 180 V228" class="arr"/><path d="M875 180 V228" class="arr"/><path d="M1054 180 V228" class="arr"/>
+  <rect x="650" y="238" width="522" height="94" rx="15" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="911" y="276" class="label" text-anchor="middle">One causal sequence model pass</text>
+  <text x="911" y="306" class="text" text-anchor="middle">Every supervised position predicts its next item or action</text>
+  <path d="M911 334 V382" class="arr"/>
+  <rect x="735" y="392" width="352" height="66" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="911" y="420" class="label" text-anchor="middle">Many labels, one encoded history</text>
+  <text x="911" y="446" class="text" text-anchor="middle">encoder work is amortized across targets</text>
+  <text x="911" y="505" class="label" text-anchor="middle">Approximate self-attention cost</text>
+  <text x="911" y="545" style="font:700 28px ui-monospace,monospace;fill:#16a34a" text-anchor="middle">N^2 = O(N^2)</text>
+</svg>

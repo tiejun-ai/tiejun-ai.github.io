@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Inside a standard causal Transformer block</title>
+  <desc id="desc">Input event states are projected into Q, K, and V. QK transpose forms causal softmax attention weights, which pool V. An output projection, residual Add and Norm, separate feed-forward network, and second residual Add and Norm produce the block output.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker>
+    <style>.h{font:700 28px system-ui,sans-serif;fill:#0f172a}.label{font:650 18px system-ui,sans-serif;fill:#0f172a}.text{font:15px system-ui,sans-serif;fill:#334155}.math{font:600 18px ui-monospace,monospace;fill:#1e293b}.box{stroke-width:2;rx:14}.arr{stroke:#64748b;stroke-width:2.5;fill:none;marker-end:url(#arrow)}.skip{stroke:#94a3b8;stroke-width:2;stroke-dasharray:7 7;fill:none;marker-end:url(#arrow)}</style>
+  </defs>
+  <rect width="1200" height="700" rx="20" fill="#f8fafc"/>
+  <text x="600" y="48" class="h" text-anchor="middle">One standard causal Transformer block</text>
+
+  <rect x="45" y="255" width="135" height="74" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="112" y="287" class="label" text-anchor="middle">Input X</text>
+  <text x="112" y="313" class="text" text-anchor="middle">event sequence</text>
+  <path d="M180 292 H235" class="arr"/>
+
+  <rect x="245" y="220" width="215" height="144" class="box" fill="#ede9fe" stroke="#7c3aed"/>
+  <text x="352" y="252" class="label" text-anchor="middle">Q, K, V projection</text>
+  <text x="352" y="283" class="math" text-anchor="middle">W X + b</text>
+  <line x1="274" y1="305" x2="430" y2="305" stroke="#c4b5fd" stroke-width="2"/>
+  <text x="352" y="337" class="math" text-anchor="middle">split → Q, K, V</text>
+
+  <path d="M460 260 C510 260 510 145 558 145" class="arr"/>
+  <path d="M460 292 H558" class="arr"/>
+  <text x="500" y="173" class="text">Q, K</text>
+  <text x="510" y="282" class="text">V</text>
+
+  <rect x="568" y="92" width="270" height="125" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="703" y="121" class="label" text-anchor="middle">Softmax attention</text>
+  <text x="703" y="151" class="math" text-anchor="middle">S = QK^T / √d + M</text>
+  <text x="703" y="181" class="math" text-anchor="middle">A = softmax(S)</text>
+  <text x="703" y="205" class="text" text-anchor="middle">M masks future positions</text>
+  <path d="M703 217 V252" class="arr"/>
+
+  <rect x="568" y="262" width="270" height="86" class="box" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="703" y="296" class="label" text-anchor="middle">Aggregate values</text>
+  <text x="703" y="326" class="math" text-anchor="middle">A V</text>
+  <path d="M838 305 H895" class="arr"/>
+
+  <rect x="905" y="262" width="205" height="86" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="1007" y="294" class="label" text-anchor="middle">Output projection</text>
+  <text x="1007" y="325" class="math" text-anchor="middle">Wₒ(A V)</text>
+  <path d="M1007 348 V363" class="arr"/>
+
+  <rect x="905" y="373" width="205" height="65" class="box" fill="#fff0bd" stroke="#d97706"/>
+  <text x="1007" y="412" class="label" text-anchor="middle">Add &amp; Norm</text>
+  <path d="M112 255 V70 H1145 V405 H1120" class="skip"/>
+  <path d="M1007 438 V455" class="arr"/>
+
+  <rect x="905" y="465" width="205" height="70" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="1007" y="493" class="label" text-anchor="middle">Feed Forward</text>
+  <text x="1007" y="519" class="text" text-anchor="middle">two linear layers</text>
+  <path d="M1007 535 V548" class="arr"/>
+
+  <rect x="905" y="558" width="205" height="65" class="box" fill="#fff0bd" stroke="#d97706"/>
+  <text x="1007" y="597" class="label" text-anchor="middle">Add &amp; Norm</text>
+  <path d="M1110 405 H1170 V590 H1120" class="skip"/>
+  <path d="M1007 623 V637" class="arr"/>
+  <rect x="905" y="647" width="205" height="42" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="1007" y="674" class="label" text-anchor="middle">Output Y</text>
+</svg>

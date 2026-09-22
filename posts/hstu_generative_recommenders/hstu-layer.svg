@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Inside one HSTU layer</title>
+  <desc id="desc">Input events are jointly projected into U, V, Q and K. Q and K form pointwise attention with positional and temporal bias. Attention pools V, layer normalization stabilizes the unnormalized sum, U gates the result, and an output projection completes the residual block.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker>
+    <style>.h{font:700 28px system-ui,sans-serif;fill:#0f172a}.label{font:650 18px system-ui,sans-serif;fill:#0f172a}.text{font:15px system-ui,sans-serif;fill:#334155}.math{font:600 18px ui-monospace,monospace;fill:#1e293b}.box{stroke-width:2;rx:14}.arr{stroke:#64748b;stroke-width:2.5;fill:none;marker-end:url(#arrow)}</style>
+  </defs>
+  <rect width="1200" height="650" rx="20" fill="#f8fafc"/>
+  <text x="600" y="48" class="h" text-anchor="middle">One Hierarchical Sequential Transduction Unit (HSTU)</text>
+  <rect x="45" y="255" width="135" height="74" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="112" y="287" class="label" text-anchor="middle">Input X</text>
+  <text x="112" y="313" class="text" text-anchor="middle">event sequence</text>
+  <path d="M180 292 H235" class="arr"/>
+  <rect x="245" y="220" width="215" height="144" class="box" fill="#ede9fe" stroke="#7c3aed"/>
+  <text x="352" y="252" class="label" text-anchor="middle">Joint projection</text>
+  <text x="352" y="283" class="math" text-anchor="middle">SiLU(W1 X + b1)</text>
+  <line x1="274" y1="305" x2="430" y2="305" stroke="#c4b5fd" stroke-width="2"/>
+  <text x="352" y="337" class="math" text-anchor="middle">split → U, V, Q, K</text>
+
+  <path d="M460 260 C510 260 510 145 558 145" class="arr"/>
+  <path d="M460 292 H558" class="arr"/>
+  <text x="500" y="173" class="text">Q, K</text><text x="510" y="282" class="text">V</text><text x="505" y="426" class="text">U</text>
+
+  <rect x="568" y="92" width="270" height="125" class="box" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="703" y="126" class="label" text-anchor="middle">Pointwise attention</text>
+  <text x="703" y="158" class="math" text-anchor="middle">A = SiLU(QK^T + rab)</text>
+  <text x="703" y="189" class="text" text-anchor="middle">no sequence-wide softmax</text>
+  <path d="M703 217 V252" class="arr"/>
+  <rect x="568" y="262" width="270" height="86" class="box" fill="#ffedd5" stroke="#ea580c"/>
+  <text x="703" y="296" class="label" text-anchor="middle">Aggregate values</text>
+  <text x="703" y="326" class="math" text-anchor="middle">LayerNorm(A V)</text>
+  <path d="M703 348 V382" class="arr"/>
+  <rect x="568" y="392" width="270" height="96" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="703" y="427" class="label" text-anchor="middle">Feature interaction gate</text>
+  <text x="703" y="460" class="math" text-anchor="middle">LayerNorm(A V) * U</text>
+  <path d="M460 325 C515 325 520 440 560 440" class="arr"/>
+
+  <path d="M838 440 H895" class="arr"/>
+  <rect x="905" y="392" width="205" height="96" class="box" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="1007" y="427" class="label" text-anchor="middle">Output projection</text>
+  <text x="1007" y="460" class="math" text-anchor="middle">W2(...) + b2</text>
+  <path d="M112 329 V540 H1145 V463" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="7 7" marker-end="url(#arrow)"/>
+  <path d="M1110 440 H1127" class="arr"/>
+  <circle cx="1145" cy="440" r="18" fill="#fff" stroke="#64748b" stroke-width="2"/>
+  <text x="1145" y="447" class="label" text-anchor="middle">+</text>
+  <path d="M1163 440 H1186" class="arr"/>
+  <text x="600" y="573" class="label" text-anchor="middle">Residual connection; stack the same block repeatedly</text>
+  <text x="600" y="608" class="text" text-anchor="middle">rab combines relative position and elapsed-time bias; LayerNorm stabilizes the unnormalized aggregation.</text>
+</svg>

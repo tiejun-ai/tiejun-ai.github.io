@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Retrieval as causal sequential transduction</title>
+  <desc id="desc">Three completed item-action pairs enter a causal HSTU sequence model and a shared retrieval head. The aligned targets are no target after A because B was skipped, C after B because C was shared, and no target after C because there is no next item.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker>
+    <style>.title{font:700 29px system-ui,sans-serif;fill:#0f172a}.label{font:700 17px system-ui,sans-serif;fill:#334155}.token{font:650 21px system-ui,sans-serif;fill:#0f172a}.body{font:16px system-ui,sans-serif;fill:#334155}.small{font:15px system-ui,sans-serif;fill:#475569}.arr{stroke:#64748b;stroke-width:2.5;fill:none;marker-end:url(#arrow)}</style>
+  </defs>
+  <rect width="1200" height="620" rx="20" fill="#f8fafc"/>
+  <text x="600" y="47" class="title" text-anchor="middle">Retrieval: predict the next positively engaged item</text>
+  <text x="600" y="78" class="body" text-anchor="middle">A liked · B skipped · C shared</text>
+  <text x="65" y="112" class="label">Input sequence x: completed (item, action) pairs</text>
+
+  <rect x="65" y="130" width="320" height="65" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <rect x="440" y="130" width="320" height="65" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <rect x="815" y="130" width="320" height="65" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="225" y="171" class="token" text-anchor="middle">(A, like)</text>
+  <text x="600" y="171" class="token" text-anchor="middle">(B, skip)</text>
+  <text x="975" y="171" class="token" text-anchor="middle">(C, share)</text>
+  <path d="M225 195 V242 M600 195 V242 M975 195 V242" class="arr"/>
+
+  <rect x="65" y="252" width="1070" height="90" rx="16" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="600" y="289" class="token" text-anchor="middle">HSTU causal sequence model</text>
+  <text x="600" y="319" class="body" text-anchor="middle">Each position sees its current pair and earlier history, never later pairs</text>
+  <path d="M600 342 V378" class="arr"/>
+
+  <rect x="360" y="388" width="480" height="68" rx="14" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+  <text x="600" y="417" class="token" text-anchor="middle">Shared retrieval head</text>
+  <text x="600" y="442" class="body" text-anchor="middle">scores candidate item IDs at supervised positions</text>
+  <text x="65" y="491" class="label">Aligned target sequence y</text>
+  <path d="M600 456 V500" class="arr"/>
+
+  <rect x="65" y="510" width="320" height="66" rx="12" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="440" y="510" width="320" height="66" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <rect x="815" y="510" width="320" height="66" rx="12" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <text x="225" y="549" class="token" text-anchor="middle">∅  no loss</text>
+  <text x="600" y="549" class="token" text-anchor="middle">C  positive target</text>
+  <text x="975" y="549" class="token" text-anchor="middle">∅  no next item</text>
+  <text x="600" y="602" class="small" text-anchor="middle">B remains in the history, but a skipped item is not a positive retrieval target.</text>
+</svg>

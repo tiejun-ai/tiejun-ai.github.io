@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Ranking as causal sequential transduction</title>
+  <desc id="desc">Item and action tokens A, like, B, skip, C, share enter a causal HSTU sequence model. A small multi-task ranking head predicts like at A, skip at B, and share at C. Action-token positions have no target.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker>
+    <style>.title{font:700 29px system-ui,sans-serif;fill:#0f172a}.label{font:700 17px system-ui,sans-serif;fill:#334155}.token{font:650 21px system-ui,sans-serif;fill:#0f172a}.body{font:16px system-ui,sans-serif;fill:#334155}.small{font:15px system-ui,sans-serif;fill:#475569}.arr{stroke:#64748b;stroke-width:2.5;fill:none;marker-end:url(#arrow)}</style>
+  </defs>
+  <rect width="1200" height="620" rx="20" fill="#f8fafc"/>
+  <text x="600" y="47" class="title" text-anchor="middle">Ranking: predict the action on each candidate item</text>
+  <text x="600" y="78" class="body" text-anchor="middle">A liked · B skipped · C shared</text>
+  <text x="50" y="112" class="label">Input sequence x: interleaved item and action tokens</text>
+
+  <rect x="50" y="130" width="170" height="65" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <rect x="235" y="130" width="170" height="65" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <rect x="420" y="130" width="170" height="65" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <rect x="605" y="130" width="170" height="65" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <rect x="790" y="130" width="170" height="65" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <rect x="975" y="130" width="170" height="65" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="135" y="171" class="token" text-anchor="middle">A</text>
+  <text x="320" y="171" class="token" text-anchor="middle">like</text>
+  <text x="505" y="171" class="token" text-anchor="middle">B</text>
+  <text x="690" y="171" class="token" text-anchor="middle">skip</text>
+  <text x="875" y="171" class="token" text-anchor="middle">C</text>
+  <text x="1060" y="171" class="token" text-anchor="middle">share</text>
+  <path d="M135 195 V242 M320 195 V242 M505 195 V242 M690 195 V242 M875 195 V242 M1060 195 V242" class="arr"/>
+
+  <rect x="50" y="252" width="1095" height="90" rx="16" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="600" y="289" class="token" text-anchor="middle">HSTU causal sequence model</text>
+  <text x="600" y="319" class="body" text-anchor="middle">At an item position, its representation combines the candidate with earlier history</text>
+  <path d="M600 342 V378" class="arr"/>
+
+  <rect x="360" y="388" width="480" height="68" rx="14" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+  <text x="600" y="417" class="token" text-anchor="middle">Small multi-task ranking head</text>
+  <text x="600" y="442" class="body" text-anchor="middle">applied to outputs at item positions</text>
+  <text x="50" y="491" class="label">Aligned target sequence y</text>
+  <path d="M450 456 L135 500 M600 456 L505 500 M750 456 L875 500" class="arr"/>
+
+  <rect x="50" y="510" width="170" height="66" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <rect x="235" y="510" width="170" height="66" rx="12" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="420" y="510" width="170" height="66" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <rect x="605" y="510" width="170" height="66" rx="12" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="790" y="510" width="170" height="66" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <rect x="975" y="510" width="170" height="66" rx="12" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <text x="135" y="549" class="token" text-anchor="middle">like</text>
+  <text x="320" y="549" class="token" text-anchor="middle">∅</text>
+  <text x="505" y="549" class="token" text-anchor="middle">skip</text>
+  <text x="690" y="549" class="token" text-anchor="middle">∅</text>
+  <text x="875" y="549" class="token" text-anchor="middle">share</text>
+  <text x="1060" y="549" class="token" text-anchor="middle">∅</text>
+  <text x="600" y="602" class="small" text-anchor="middle">Loss is applied at item positions; action-token positions have no ranking target.</text>
+</svg>
