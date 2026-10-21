@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="860" viewBox="0 0 1100 860" role="img" aria-labelledby="title desc">
+<title id="title">Delegate a subtask, keep control</title><desc id="desc">The parent LLM requests delegate(task). A child gets the task, workspace context and a short parent history excerpt. It has its own loop and memory with read-only, step and depth limits. Its final answer returns to the parent as a delegate tool result. Execution is synchronous.</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 Z" fill="#526C81"/></marker></defs>
+<style>text {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; fill:#162B40;} .mono {font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;}</style>
+<rect width="1100" height="860" fill="#F8FAFD"/>
+
+<text x="48" y="54" font-size="32" font-weight="700" text-anchor="start" style="fill:#162B40">Delegate a subtask, keep control</text>
+<text x="48" y="91" font-size="21" font-weight="400" text-anchor="start" style="fill:#4B6175">A subagent is another agentic loop, created through the delegate tool.</text>
+<rect x="50" y="142" width="340" height="604" rx="16" fill="#FFFFFF" stroke="#D6E0EA" stroke-width="1.6"/>
+<text x="78" y="184" font-size="18" font-weight="600" text-anchor="start" style="fill:#7354AC">PARENT SESSION</text>
+<rect x="575" y="142" width="475" height="604" rx="16" fill="#FFFFFF" stroke="#D6E0EA" stroke-width="1.6"/>
+<text x="603" y="184" font-size="18" font-weight="600" text-anchor="start" style="fill:#087B72">CHILD SESSION</text>
+<rect x="80" y="220" width="280" height="100" rx="16" fill="#EAF2FF" stroke="#AAC8ED" stroke-width="1.6"/>
+<text x="220" y="259" font-size="26" font-weight="700" text-anchor="middle" style="fill:#162B40">Parent LLM</text>
+<text x="220" y="294" font-size="21" font-weight="400" text-anchor="middle" style="fill:#4B6175">Decide a helper is useful</text>
+<rect x="80" y="407" width="280" height="100" rx="16" fill="#F2EDFA" stroke="#CABBE2" stroke-width="1.6"/>
+<text x="220" y="446" font-size="24" font-weight="650" text-anchor="middle" style="fill:#162B40" class="mono">delegate(task)</text>
+<text x="220" y="481" font-size="21" font-weight="400" text-anchor="middle" style="fill:#4B6175" class="mono">tool_delegate()</text>
+<path d="M220 320 V407" fill="none" stroke="#526C81" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="80" y="610" width="280" height="100" rx="16" fill="#F2EDFA" stroke="#CABBE2" stroke-width="1.6"/>
+<text x="220" y="650" font-size="24" font-weight="650" text-anchor="middle" style="fill:#162B40">Next parent prompt</text>
+<text x="220" y="685" font-size="20" font-weight="400" text-anchor="middle" style="fill:#4B6175">Includes the delegate result</text>
+<path d="M80 660 H65 V270 H80" fill="none" stroke="#526C81" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="605" y="220" width="415" height="100" rx="16" fill="#FFF5DE" stroke="#E4CB8E" stroke-width="1.6"/>
+<text x="812" y="255" font-size="25" font-weight="700" text-anchor="middle" style="fill:#162B40">Inherited context</text>
+<text x="812" y="284" font-size="20" font-weight="400" text-anchor="middle" style="fill:#4B6175">Subtask + workspace context</text>
+<text x="812" y="310" font-size="20" font-weight="400" text-anchor="middle" style="fill:#4B6175">Short excerpt of parent history</text>
+<path d="M360 457 H465 V270 H605" fill="none" stroke="#526C81" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="518" y="359" font-size="18" font-weight="600" text-anchor="middle" style="fill:#4B6175">spawn</text>
+<rect x="605" y="385" width="415" height="198" rx="16" fill="#E7F6F2" stroke="#9FD4C8" stroke-width="1.6"/>
+<text x="812" y="425" font-size="27" font-weight="700" text-anchor="middle" style="fill:#162B40">Child agentic loop</text>
+<text x="812" y="461" font-size="21" font-weight="400" text-anchor="middle" style="fill:#4B6175">Own session + working memory</text>
+<rect x="627" y="492" width="371" height="66" rx="12" fill="#FFFFFF" stroke="#9FD4C8" stroke-width="1.6"/>
+<text x="812" y="519" font-size="18" font-weight="700" text-anchor="middle" style="fill:#087B72">READ-ONLY</text>
+<text x="812" y="546" font-size="20" font-weight="400" text-anchor="middle" style="fill:#4B6175">Step budget · recursion-depth limit</text>
+<path d="M812 320 V385" fill="none" stroke="#526C81" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="605" y="644" width="415" height="66" rx="16" fill="#EAF2FF" stroke="#AAC8ED" stroke-width="1.6"/>
+<text x="812" y="685" font-size="25" font-weight="650" text-anchor="middle" style="fill:#162B40">Child’s final answer</text>
+<path d="M812 583 V644" fill="none" stroke="#526C81" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<path d="M605 677 H465 V660 H360" fill="none" stroke="#526C81" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="465" y="735" font-size="18" font-weight="600" text-anchor="middle" style="fill:#4B6175">tool result</text>
+<text x="50" y="802" font-size="21" font-weight="400" text-anchor="start" style="fill:#4B6175">The parent waits for the child, then continues with its returned result.</text>
+<text x="1050" y="838" font-size="16" font-weight="400" text-anchor="end" style="fill:#4B6175">tiejun-ai.github.io</text>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="820" viewBox="0 0 1100 820" role="img" aria-labelledby="title desc">
+<title id="title">What enters each LLM call</title><desc id="desc">The input prompt consists of a stable prefix, working memory, compact transcript and current request. The model receives this ordered text and returns a tool call or final answer.</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 Z" fill="#526C81"/></marker></defs>
+<style>text {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; fill:#162B40;} .mono {font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;}</style>
+<rect width="1100" height="820" fill="#F8FAFD"/>
+
+<text x="48" y="54" font-size="32" font-weight="700" text-anchor="start" style="fill:#162B40">What enters each LLM call</text>
+<text x="48" y="91" font-size="21" font-weight="400" text-anchor="start" style="fill:#4B6175">prompt() concatenates four components in this order.</text>
+<rect x="40" y="133" width="680" height="591" rx="16" fill="#FFFFFF" stroke="#D6E0EA" stroke-width="1.6"/>
+<text x="65" y="169" font-size="18" font-weight="600" text-anchor="start" style="fill:#7354AC">INPUT PROMPT</text>
+<rect x="60" y="190" width="640" height="152" rx="16" fill="#F2EDFA" stroke="#CABBE2" stroke-width="1.6"/>
+<text x="82" y="225" font-size="24" font-weight="700" text-anchor="start" style="fill:#162B40">1  Stable prefix</text>
+<text x="677" y="224" font-size="18" font-weight="600" text-anchor="end" style="fill:#7354AC">FIXED</text>
+<text x="82" y="259" font-size="19" font-weight="400" text-anchor="start" style="fill:#7354AC" class="mono">self.prefix</text>
+<text x="82" y="294" font-size="21" font-weight="400" text-anchor="start" style="fill:#4B6175">General instruction · rules · tool descriptions</text>
+<text x="82" y="323" font-size="21" font-weight="400" text-anchor="start" style="fill:#4B6175">Response examples · workspace context</text>
+<rect x="60" y="357" width="640" height="103" rx="16" fill="#FFF5DE" stroke="#E4CB8E" stroke-width="1.6"/>
+<text x="82" y="392" font-size="24" font-weight="700" text-anchor="start" style="fill:#162B40">2  Working memory</text>
+<text x="677" y="391" font-size="18" font-weight="600" text-anchor="end" style="fill:#916318">DYNAMIC</text>
+<text x="82" y="424" font-size="20" font-weight="400" text-anchor="start" style="fill:#4B6175">Task · recent file paths · short notes</text>
+<rect x="60" y="475" width="640" height="103" rx="16" fill="#E7F6F2" stroke="#9FD4C8" stroke-width="1.6"/>
+<text x="82" y="510" font-size="24" font-weight="700" text-anchor="start" style="fill:#162B40">3  Compact transcript</text>
+<text x="677" y="509" font-size="18" font-weight="600" text-anchor="end" style="fill:#087B72">DYNAMIC</text>
+<text x="82" y="542" font-size="20" font-weight="400" text-anchor="start" style="fill:#4B6175">Clipped and deduplicated conversation history</text>
+<rect x="60" y="593" width="640" height="103" rx="16" fill="#EAF2FF" stroke="#AAC8ED" stroke-width="1.6"/>
+<text x="82" y="628" font-size="24" font-weight="700" text-anchor="start" style="fill:#162B40">4  Current request</text>
+<text x="677" y="627" font-size="18" font-weight="600" text-anchor="end" style="fill:#2063B8">CURRENT</text>
+<text x="82" y="660" font-size="20" font-weight="400" text-anchor="start" style="fill:#4B6175">The user instruction for this run of ask()</text>
+<rect x="800" y="350" width="250" height="137" rx="16" fill="#EAF2FF" stroke="#AAC8ED" stroke-width="1.6"/>
+<text x="925" y="400" font-size="33" font-weight="700" text-anchor="middle" style="fill:#162B40">LLM</text>
+<text x="925" y="442" font-size="21" font-weight="400" text-anchor="middle" style="fill:#4B6175">Decide the next action</text>
+<path d="M720 419 H800" fill="none" stroke="#526C81" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<rect x="800" y="554" width="250" height="100" rx="16" fill="#FFFFFF" stroke="#D6E0EA" stroke-width="1.6"/>
+<text x="925" y="592" font-size="23" font-weight="600" text-anchor="middle" style="fill:#162B40">Tool call</text>
+<text x="925" y="623" font-size="23" font-weight="600" text-anchor="middle" style="fill:#162B40">or final answer</text>
+<path d="M925 487 V554" fill="none" stroke="#526C81" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow)"/>
+<text x="48" y="768" font-size="21" font-weight="400" text-anchor="start" style="fill:#4B6175">After a tool call, updated memory and history feed the next prompt.</text>
+<text x="1050" y="798" font-size="16" font-weight="400" text-anchor="end" style="fill:#4B6175">tiejun-ai.github.io</text>
+</svg>
