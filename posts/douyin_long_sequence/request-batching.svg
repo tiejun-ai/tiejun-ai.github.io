@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="650" viewBox="0 0 1100 650" role="img" aria-labelledby="title desc">
+  <title id="title">Request Level Batching shares history encoding across targets</title>
+  <desc id="desc">Pointwise batching transfers and encodes the same history repeatedly. Request Level Batching transfers and encodes the history once, then reuses it for separate candidate-conditioned attention computations. Each candidate retains its own prediction and loss.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8 Z" fill="#64748b"/></marker>
+    <style>.title{font-family:Arial,Helvetica,sans-serif;font-size:27px;font-weight:700;fill:#0f172a}.label{font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:650;fill:#0f172a}.text{font-family:Arial,Helvetica,sans-serif;font-size:18px;fill:#334155}.small{font-family:Arial,Helvetica,sans-serif;font-size:16px;fill:#475569}.arr{stroke:#64748b;stroke-width:2.4;fill:none;marker-end:url(#arrow)}.box{stroke-width:2;rx:12}</style>
+  </defs>
+  <rect width="1100" height="650" rx="20" fill="#f8fafc"/>
+  <text x="550" y="48" class="title" text-anchor="middle">RLB: one history payload, multiple targets</text>
+  <line x1="520" y1="83" x2="520" y2="585" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="7 7"/>
+  <text x="260" y="111" class="label" text-anchor="middle">Pointwise batching</text>
+  <text x="805" y="111" class="label" text-anchor="middle">Request Level Batching</text>
+  <g>
+    <rect x="35" y="150" width="300" height="80" class="box" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="185" y="182" class="label" text-anchor="middle">Transfer + encode H</text><text x="185" y="211" class="text" text-anchor="middle">copy 1</text>
+    <path d="M335 190 H361" class="arr"/>
+    <rect x="365" y="150" width="115" height="80" class="box" fill="#fef3c7" stroke="#d97706"/><text x="422" y="197" class="label" text-anchor="middle">target 1</text>
+    <rect x="35" y="265" width="300" height="80" class="box" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="185" y="297" class="label" text-anchor="middle">Transfer + encode H</text><text x="185" y="326" class="text" text-anchor="middle">copy 2</text>
+    <path d="M335 305 H361" class="arr"/>
+    <rect x="365" y="265" width="115" height="80" class="box" fill="#fef3c7" stroke="#d97706"/><text x="422" y="312" class="label" text-anchor="middle">target 2</text>
+    <text x="260" y="392" class="label" text-anchor="middle">…</text>
+    <rect x="35" y="425" width="300" height="80" class="box" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="185" y="457" class="label" text-anchor="middle">Transfer + encode H</text><text x="185" y="486" class="text" text-anchor="middle">copy m</text>
+    <path d="M335 465 H361" class="arr"/>
+    <rect x="365" y="425" width="115" height="80" class="box" fill="#fef3c7" stroke="#d97706"/><text x="422" y="472" class="label" text-anchor="middle">target m</text>
+    <text x="260" y="554" class="text" text-anchor="middle">Repeated history movement and encoding</text>
+  </g>
+  <rect x="565" y="150" width="490" height="90" class="box" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="810" y="187" class="label" text-anchor="middle">Transfer + encode H once</text>
+  <text x="810" y="219" class="text" text-anchor="middle">Share the candidate-independent history path</text>
+  <path d="M810 240 V274 H630 V312" class="arr"/>
+  <path d="M810 240 V312" class="arr"/>
+  <path d="M810 274 H990 V312" class="arr"/>
+  <rect x="565" y="315" width="130" height="86" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <rect x="745" y="315" width="130" height="86" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <rect x="925" y="315" width="130" height="86" class="box" fill="#fef3c7" stroke="#d97706"/>
+  <text x="630" y="349" class="label" text-anchor="middle">target 1</text><text x="630" y="380" class="small" text-anchor="middle">attention 1</text>
+  <text x="810" y="349" class="label" text-anchor="middle">target 2</text><text x="810" y="380" class="small" text-anchor="middle">attention 2</text>
+  <text x="990" y="349" class="label" text-anchor="middle">target m</text><text x="990" y="380" class="small" text-anchor="middle">attention m</text>
+  <text x="720" y="363" class="text" text-anchor="middle">…</text><text x="900" y="363" class="text" text-anchor="middle">…</text>
+  <path d="M630 401 V441" class="arr"/><path d="M810 401 V441" class="arr"/><path d="M990 401 V441" class="arr"/>
+  <rect x="565" y="445" width="490" height="70" class="box" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="810" y="476" class="label" text-anchor="middle">Separate predictions and losses</text>
+  <text x="810" y="502" class="small" text-anchor="middle">Preserve the intended target weights</text>
+  <text x="810" y="554" class="text" text-anchor="middle">Share history encoding; retain target-specific reads</text>
+  <text x="550" y="616" class="small" text-anchor="middle">The paper typically groups m = 8 targets. Shared history-path savings do not remove candidate-side work.</text>
+</svg>
